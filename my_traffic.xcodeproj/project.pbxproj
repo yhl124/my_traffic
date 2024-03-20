@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F8C86DDA2BAB121E00E6AD91 /* my_trafficApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86DD92BAB121E00E6AD91 /* my_trafficApp.swift */; };
-		F8C86DDC2BAB121E00E6AD91 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86DDB2BAB121E00E6AD91 /* ContentView.swift */; };
+		F8C86DDC2BAB121E00E6AD91 /* ContentView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86DDB2BAB121E00E6AD91 /* ContentView2.swift */; };
 		F8C86DDE2BAB121E00E6AD91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8C86DDD2BAB121E00E6AD91 /* Assets.xcassets */; };
 		F8C86DE12BAB121E00E6AD91 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8C86DE02BAB121E00E6AD91 /* Preview Assets.xcassets */; };
 		F8C86DE32BAB121E00E6AD91 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86DE22BAB121E00E6AD91 /* Persistence.swift */; };
@@ -16,6 +16,11 @@
 		F8C86DF02BAB121F00E6AD91 /* my_trafficTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86DEF2BAB121F00E6AD91 /* my_trafficTests.swift */; };
 		F8C86DFA2BAB121F00E6AD91 /* my_trafficUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86DF92BAB121F00E6AD91 /* my_trafficUITests.swift */; };
 		F8C86DFC2BAB121F00E6AD91 /* my_trafficUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86DFB2BAB121F00E6AD91 /* my_trafficUITestsLaunchTests.swift */; };
+		F8C86E202BAB145B00E6AD91 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86E1F2BAB145B00E6AD91 /* MainView.swift */; };
+		F8C86E222BAB14A000E6AD91 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86E212BAB14A000E6AD91 /* SettingView.swift */; };
+		F8C86E242BAB14B200E6AD91 /* SubwayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86E232BAB14B200E6AD91 /* SubwayView.swift */; };
+		F8C86E262BAB14BF00E6AD91 /* BusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86E252BAB14BF00E6AD91 /* BusView.swift */; };
+		F8C86E2B2BAB310000E6AD91 /* SubwaySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C86E2A2BAB310000E6AD91 /* SubwaySearch.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +43,7 @@
 /* Begin PBXFileReference section */
 		F8C86DD62BAB121E00E6AD91 /* my_traffic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = my_traffic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8C86DD92BAB121E00E6AD91 /* my_trafficApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = my_trafficApp.swift; sourceTree = "<group>"; };
-		F8C86DDB2BAB121E00E6AD91 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F8C86DDB2BAB121E00E6AD91 /* ContentView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView2.swift; sourceTree = "<group>"; };
 		F8C86DDD2BAB121E00E6AD91 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F8C86DE02BAB121E00E6AD91 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F8C86DE22BAB121E00E6AD91 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -48,6 +53,12 @@
 		F8C86DF52BAB121F00E6AD91 /* my_trafficUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = my_trafficUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8C86DF92BAB121F00E6AD91 /* my_trafficUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = my_trafficUITests.swift; sourceTree = "<group>"; };
 		F8C86DFB2BAB121F00E6AD91 /* my_trafficUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = my_trafficUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		F8C86E1F2BAB145B00E6AD91 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		F8C86E212BAB14A000E6AD91 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		F8C86E232BAB14B200E6AD91 /* SubwayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubwayView.swift; sourceTree = "<group>"; };
+		F8C86E252BAB14BF00E6AD91 /* BusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusView.swift; sourceTree = "<group>"; };
+		F8C86E292BAB15F400E6AD91 /* .gitignore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = .gitignore.md; sourceTree = "<group>"; };
+		F8C86E2A2BAB310000E6AD91 /* SubwaySearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubwaySearch.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +89,7 @@
 		F8C86DCD2BAB121E00E6AD91 = {
 			isa = PBXGroup;
 			children = (
+				F8C86E292BAB15F400E6AD91 /* .gitignore.md */,
 				F8C86DD82BAB121E00E6AD91 /* my_traffic */,
 				F8C86DEE2BAB121F00E6AD91 /* my_trafficTests */,
 				F8C86DF82BAB121F00E6AD91 /* my_trafficUITests */,
@@ -98,11 +110,11 @@
 		F8C86DD82BAB121E00E6AD91 /* my_traffic */ = {
 			isa = PBXGroup;
 			children = (
-				F8C86DD92BAB121E00E6AD91 /* my_trafficApp.swift */,
-				F8C86DDB2BAB121E00E6AD91 /* ContentView.swift */,
+				F8C86E092BAB12EC00E6AD91 /* views */,
+				F8C86E082BAB12E200E6AD91 /* widgtes */,
+				F8C86E0A2BAB12FC00E6AD91 /* datas */,
 				F8C86DDD2BAB121E00E6AD91 /* Assets.xcassets */,
 				F8C86DE22BAB121E00E6AD91 /* Persistence.swift */,
-				F8C86DE42BAB121E00E6AD91 /* my_traffic.xcdatamodeld */,
 				F8C86DDF2BAB121E00E6AD91 /* Preview Content */,
 			);
 			path = my_traffic;
@@ -131,6 +143,35 @@
 				F8C86DFB2BAB121F00E6AD91 /* my_trafficUITestsLaunchTests.swift */,
 			);
 			path = my_trafficUITests;
+			sourceTree = "<group>";
+		};
+		F8C86E082BAB12E200E6AD91 /* widgtes */ = {
+			isa = PBXGroup;
+			children = (
+				F8C86E2A2BAB310000E6AD91 /* SubwaySearch.swift */,
+			);
+			path = widgtes;
+			sourceTree = "<group>";
+		};
+		F8C86E092BAB12EC00E6AD91 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				F8C86DD92BAB121E00E6AD91 /* my_trafficApp.swift */,
+				F8C86DDB2BAB121E00E6AD91 /* ContentView2.swift */,
+				F8C86E1F2BAB145B00E6AD91 /* MainView.swift */,
+				F8C86E212BAB14A000E6AD91 /* SettingView.swift */,
+				F8C86E232BAB14B200E6AD91 /* SubwayView.swift */,
+				F8C86E252BAB14BF00E6AD91 /* BusView.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		F8C86E0A2BAB12FC00E6AD91 /* datas */ = {
+			isa = PBXGroup;
+			children = (
+				F8C86DE42BAB121E00E6AD91 /* my_traffic.xcdatamodeld */,
+			);
+			path = datas;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -264,8 +305,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8C86DE32BAB121E00E6AD91 /* Persistence.swift in Sources */,
-				F8C86DDC2BAB121E00E6AD91 /* ContentView.swift in Sources */,
+				F8C86DDC2BAB121E00E6AD91 /* ContentView2.swift in Sources */,
+				F8C86E2B2BAB310000E6AD91 /* SubwaySearch.swift in Sources */,
 				F8C86DDA2BAB121E00E6AD91 /* my_trafficApp.swift in Sources */,
+				F8C86E222BAB14A000E6AD91 /* SettingView.swift in Sources */,
+				F8C86E202BAB145B00E6AD91 /* MainView.swift in Sources */,
+				F8C86E262BAB14BF00E6AD91 /* BusView.swift in Sources */,
+				F8C86E242BAB14B200E6AD91 /* SubwayView.swift in Sources */,
 				F8C86DE62BAB121E00E6AD91 /* my_traffic.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
