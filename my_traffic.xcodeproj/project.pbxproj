@@ -57,8 +57,8 @@
 		F8C86E212BAB14A000E6AD91 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		F8C86E232BAB14B200E6AD91 /* SubwayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubwayView.swift; sourceTree = "<group>"; };
 		F8C86E252BAB14BF00E6AD91 /* BusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusView.swift; sourceTree = "<group>"; };
-		F8C86E292BAB15F400E6AD91 /* .gitignore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = .gitignore.md; sourceTree = "<group>"; };
 		F8C86E2A2BAB310000E6AD91 /* SubwaySearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubwaySearch.swift; sourceTree = "<group>"; };
+		F8F49AE42BADBAE5007A17A4 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +89,7 @@
 		F8C86DCD2BAB121E00E6AD91 = {
 			isa = PBXGroup;
 			children = (
-				F8C86E292BAB15F400E6AD91 /* .gitignore.md */,
+				F8F49AE42BADBAE5007A17A4 /* .gitignore */,
 				F8C86DD82BAB121E00E6AD91 /* my_traffic */,
 				F8C86DEE2BAB121F00E6AD91 /* my_trafficTests */,
 				F8C86DF82BAB121F00E6AD91 /* my_trafficUITests */,
