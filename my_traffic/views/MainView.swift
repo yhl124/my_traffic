@@ -44,7 +44,8 @@ struct MainView: View {
                 }
             }
             //.navigationBarTitleDisplayMode(.inline)
-            .navigationBarTitle("위젯 설정", displayMode: .inline)
+            //.navigationBarTitle("위젯 설정", displayMode: .inline)
+            .navigationTitle("위젯 설정")
             .navigationBarItems(
                 //leading: Text("위젯 설정").font(.headline),
                 trailing: NavigationLink(destination: SettingView()) {

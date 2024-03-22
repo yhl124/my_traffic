@@ -30,13 +30,14 @@ struct SubwayView: View{
         NavigationView{
             VStack {
                 // 검색 결과 표시
-                List(searchResults, id: \.self) { result in
-                    Text(result)
-                }
+//                List(searchResults, id: \.self) { result in
+//                    Text(result)
+//                }
             }
         }
-        .searchable(text: $searchText, placement: .automatic, prompt: "정류장 검색")
         .navigationTitle("지하철 검색")
+        .searchable(text: $searchText, placement: .automatic, prompt: "정류장 검색")
+        
         
         .padding()
     }

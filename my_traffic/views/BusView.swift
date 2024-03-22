@@ -15,12 +15,14 @@ struct BusView: View{
         NavigationView{
             VStack{
                 Text("Bus view")
+                    .padding()
             }
         }
-        .navigationTitle("버스 검색")
-        .searchable(text: $searchText, placement: .automatic, prompt: "정류장 검색")
+        .navigationTitle("버스 정류장 검색")
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "정류장 검색")
     }
 }
+
 
 #Preview {
     BusView()
