@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct MainView: View {
+struct MainView: View {    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -43,9 +43,10 @@ struct MainView: View {
                     }
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
+            //.navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("위젯 설정", displayMode: .inline)
             .navigationBarItems(
-                leading: Text("Traffic").font(.headline),
+                //leading: Text("위젯 설정").font(.headline),
                 trailing: NavigationLink(destination: SettingView()) {
                     Image(systemName: "gear")
                 }

@@ -10,6 +10,9 @@ import SwiftUI
 
 struct SettingView: View{
     var body: some View{
-        Text("Setting View")
+        VStack{
+            Text("Setting View")
+        }
+        .navigationTitle("앱 설정")
     }
 }

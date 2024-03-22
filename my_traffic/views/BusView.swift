@@ -9,7 +9,19 @@ import Foundation
 import SwiftUI
 
 struct BusView: View{
+    @State private var searchText: String = ""
+    
     var body: some View{
-        Text("Bus View")
+        NavigationView{
+            VStack{
+                Text("Bus view")
+            }
+        }
+        .navigationTitle("버스 검색")
+        .searchable(text: $searchText, placement: .automatic, prompt: "정류장 검색")
     }
+}
+
+#Preview {
+    BusView()
 }
