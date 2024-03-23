@@ -62,7 +62,7 @@ struct BusStopData: Codable {
 struct BusStopSearch {
     func fetchBusStopData(query: String, completion: @escaping (Result<BusStopData, Error>) -> Void) {
         let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
-        let baseURL = "https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList"
+        let baseURL = "https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList?"
         let queryItems = [
             URLQueryItem(name: "serviceKey", value: apiKey),
             URLQueryItem(name: "pageNo", value: "1"),
@@ -83,8 +83,16 @@ struct BusStopSearch {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
+        print(request)
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
-            // 이전 코드와 동일한 처리 로직
+            DispatchQueue.main.async {
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Response Data: \(responseString)")
+                } else if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
         }.resume()
     }
 }
