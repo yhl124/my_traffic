@@ -69,6 +69,7 @@ struct BusView: View {
     @State private var searchQuery = ""
     @State private var busStops: [BusStopData.BusStop] = []
     
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -79,12 +80,13 @@ struct BusView: View {
                 List(busStops) { busStop in
                     VStack(alignment: .leading) {
                         Text(busStop.name)
-                        Text("Latitude: \(busStop.location.latitude), Longitude: \(busStop.location.longitude)")
+                        Text("정류소 이름: \(busStop.nodenm), 정류소 번호: \(busStop.nodeno)")
                     }
                 }
             }
             .navigationBarTitle("버스 정류장 검색")
-            .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "정류장 검색") // 검색 가능한 TextField를 추가합니다.
+            // 검색 가능한 TextField를 추가합니다.
+            .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "정류장 검색")
             .onSubmit(of: .search) {
                 searchBusStops()
             }
