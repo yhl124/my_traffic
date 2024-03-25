@@ -67,7 +67,8 @@ import SwiftUI
 
 struct BusView: View {
     @State private var searchQuery = ""
-    @State private var busStops: [BusStopData.BusStop] = []
+    @State private var busStops: [BusStopData.ResponseBody.Body.Items.Item] = []
+
     
     
     var body: some View {
@@ -79,8 +80,8 @@ struct BusView: View {
                 
                 List(busStops) { busStop in
                     VStack(alignment: .leading) {
-                        Text(busStop.name)
-                        Text("정류소 이름: \(busStop.nodenm), 정류소 번호: \(busStop.nodeno)")
+                        Text(busStop.nodenm) // 정류장 이름
+                        Text("정류소 번호: \(busStop.nodeno)") // 정류소 번호
                     }
                 }
             }
@@ -98,7 +99,7 @@ struct BusView: View {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let data):
-                    busStops = data.stops
+                    busStops = data.response.body.items.item
                 case .failure(let error):
                     print("Error fetching bus stop data: \(error.localizedDescription)")
                 }
