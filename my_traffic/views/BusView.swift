@@ -65,41 +65,84 @@ import SwiftUI
 //    }
 //}
 
-struct BusView: View {
-    @State private var searchQuery = ""
-    @State private var busStops: [BusStopData.ResponseBody.Body.Items.Item] = []
+//struct BusView: View {
+//    @State private var searchQuery = ""
+//    @State private var busStops: [BusStopData.ResponseBody.Body.Items.Item] = []
+//
+//    
+//    
+//    var body: some View {
+//        NavigationView {
+//            VStack {
+////                TextField("Search for bus stop", text: $searchQuery, onCommit: searchBusStops)
+////                    .textFieldStyle(RoundedBorderTextFieldStyle())
+////                    .padding()
+//                
+//                List(busStops) { busStop in
+//                    VStack(alignment: .leading) {
+//                        Text(busStop.nodenm) // 정류장 이름
+//                        Text("정류소 번호: \(busStop.nodeno)") // 정류소 번호
+//                    }
+//                }
+//            }
+//            .navigationBarTitle("버스 정류장 검색")
+//            // 검색 가능한 TextField를 추가합니다.
+//            .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "정류장 검색")
+//            .onSubmit(of: .search) {
+//                searchBusStops()
+//            }
+//        }
+//    }
+//    
+//    private func searchBusStops() {
+//        BusStopSearch().fetchBusStopData(query: searchQuery) { result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let data):
+//                    busStops = data.response.body.items.item
+//                case .failure(let error):
+//                    print("Error fetching bus stop data: \(error.localizedDescription)")
+//                }
+//            }
+//        }
+//    }
+//}
 
-    
+struct BusView: View {
+    @StateObject private var viewModel = BusStopViewModel()
     
     var body: some View {
+        VStack{
         NavigationView {
-            VStack {
-//                TextField("Search for bus stop", text: $searchQuery, onCommit: searchBusStops)
-//                    .textFieldStyle(RoundedBorderTextFieldStyle())
-//                    .padding()
-                
-                List(busStops) { busStop in
+                List(viewModel.busStops, id: \.id) { item in
                     VStack(alignment: .leading) {
-                        Text(busStop.nodenm) // 정류장 이름
-                        Text("정류소 번호: \(busStop.nodeno)") // 정류소 번호
+                        Text(item.nodenm)
+                        Text("\(item.nodeno)")
                     }
                 }
             }
-            .navigationBarTitle("버스 정류장 검색")
-            // 검색 가능한 TextField를 추가합니다.
-            .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "정류장 검색")
+            .navigationTitle("버스 정류장 검색")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $viewModel.searchQuery, placement: .navigationBarDrawer, prompt: "정류장 검색")
+
             .onSubmit(of: .search) {
-                searchBusStops()
+                viewModel.searchBusStops()
             }
         }
     }
+}
+
+class BusStopViewModel: ObservableObject {
+    @Published var searchQuery = ""
+    @Published var busStops: [BusStop] = [] // BusStop으로 데이터 타입 변경
     
-    private func searchBusStops() {
+    func searchBusStops() {
         BusStopSearch().fetchBusStopData(query: searchQuery) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let data):
-                    busStops = data.response.body.items.item
+                    // 데이터를 직접 할당
+                    self.busStops = data.map { BusStop(nodenm: $0.nodenm, nodeno: $0.nodeno) }
                 case .failure(let error):
                     print("Error fetching bus stop data: \(error.localizedDescription)")
                 }
@@ -107,6 +150,7 @@ struct BusView: View {
         }
     }
 }
+
 
 #Preview {
     BusView()
