@@ -7,34 +7,6 @@
 
 import Foundation
 
-//class ApiClass {
-//    let plistPath = Bundle.main.path(forResource: "keys", ofType: "plist")
-//    
-////    var apiKey: String? {
-////            guard let path = plistPath,
-////                  let xml = FileManager.default.contents(atPath: path),
-////                  let plistData = try? PropertyListSerialization.propertyList(from: xml, format: nil) as? [String: Any],
-////                  let key = plistData["BusStationSearch"] as? String else {
-////                return nil
-////            }
-////            return key
-////        }
-//    
-//    func getKey(keyname: String) -> String? {
-//        
-//        var apiKey: String? {
-//            guard let path = plistPath,
-//                  let xml = FileManager.default.contents(atPath: path),
-//                  let plistData = try? PropertyListSerialization.propertyList(from: xml, format: nil) as? [String: Any],
-//                  let key = plistData[keyname] as? String else {
-//                return nil
-//            }
-//            return key
-//        }
-//        return apiKey
-//    }
-//}
-
 struct KeyOutput {
     static func getAPIKey(for key: String) -> String {
         guard let filePath = Bundle.main.path(forResource: "keys", ofType: "plist") else {
