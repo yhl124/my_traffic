@@ -9,11 +9,19 @@ import Foundation
 import SwiftUI
 
 struct BusStopDetailView: View {
-    @State var busStop: BusStop
-    //@Binding var isPresented: Bool
-    
+    var busStop: BusStop
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
-        // 여기에 버스 정류장 세부 정보를 표시하는 코드를 작성합니다.
-        Text("Bus Stop Detail: \(busStop.nodenm)")
+        CustomSheetStyle(
+            content: Text("Selected Bus Stop: \(busStop.nodenm), \(busStop.nodeno)"),
+            title: "Bus Stop Details",
+            onDismiss: {
+                presentationMode.wrappedValue.dismiss()
+            },
+            onConfirm: {
+                presentationMode.wrappedValue.dismiss()
+            }
+        )
     }
 }
