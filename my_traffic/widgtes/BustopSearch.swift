@@ -43,11 +43,12 @@ struct BusStopData: Codable {
 struct BusStopSearch {
     func fetchBusStopData(query: String, completion: @escaping (Result<[(nodenm: String, nodeno: Int)], Error>) -> Void) {
         let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
+        //let apiKey_decoded = apiKey.removingPercentEncoding
         let pageNo = "1"
         let numOfRows = "10"
         let _type = "json"
         let cityCode = "31160"
-        let nodeNm = "금정"
+        let nodeNm = query
         let baseURL = "https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList?serviceKey=\(apiKey)&pageNo=\(pageNo)&numOfRows=\(numOfRows)&_type=\(_type)&cityCode=\(cityCode)&nodeNm=\(nodeNm)"
         
         guard let encodedStr = baseURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
@@ -55,10 +56,13 @@ struct BusStopSearch {
             return
         }
         
-        guard let url = URL(string: encodedStr) else {
-            completion(.failure(NSError(domain: "BusStopSearch", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to create URL"])))
-            return
-        }
+        let encodedAndReplace = encodedStr.replacingOccurrences(of: "%25", with: "%")
+        guard let url = URL(string: encodedAndReplace) else {return}
+        
+//        guard let url = URL(string: encodedStr) else {
+//            completion(.failure(NSError(domain: "BusStopSearch", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to create URL"])))
+//            return
+//        }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"

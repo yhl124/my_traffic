@@ -11,10 +11,11 @@ import SwiftUI
 struct BusView: View {
     @StateObject private var viewModel = BusStopViewModel()
     @State private var selectedBusStop: BusStop? // Track the selected bus stop
+    @State private var isLoading: Bool = false // Track loading state
     
     var body: some View {
         VStack{
-            NavigationView {
+        NavigationView {
                 List(viewModel.busStops, id: \.id) { item in
                     VStack(alignment: .leading) {
                         Text(item.nodenm)
@@ -22,23 +23,25 @@ struct BusView: View {
                     }
                     .onTapGesture {
                         selectedBusStop = item
+                        
                     }
                 }
                 .listStyle(.plain) // 리스트 스타일 지정 (선택 가능하도록)
-
-                }
             }
-            .navigationTitle("버스 정류장 검색")
-            .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $viewModel.searchQuery, placement: .navigationBarDrawer, prompt: "정류장 검색")
-            .onSubmit(of: .search) {
-                viewModel.searchBusStops()
-            }
-            .sheet(item: $selectedBusStop) { busStop in
-                BusStopDetailView(busStop: busStop)
-       }
+        }
+        .navigationTitle("버스 정류장 검색")
+        .navigationBarTitleDisplayMode(.inline)
+        .searchable(text: $viewModel.searchQuery, placement: .navigationBarDrawer, prompt: "정류장 검색")
+        .onSubmit(of: .search) {
+            viewModel.searchBusStops()
+        }
+        .sheet(item: $selectedBusStop) { busStop in
+            BusStopDetailView(busStop: busStop)
+        }
     }
 }
+
+
 
 class BusStopViewModel: ObservableObject {
     @Published var searchQuery = ""
@@ -59,7 +62,7 @@ class BusStopViewModel: ObservableObject {
     }
 }
 
-
-#Preview {
-    BusView()
-}
+//
+//#Preview {
+//    BusView()
+//}
