@@ -15,7 +15,7 @@ struct BusStopDetailView: View {
     var body: some View {
         CustomSheetStyle(
             content: Text("Selected Bus Stop: \(busStop.nodenm), \(busStop.nodeno)"),
-            title: "Bus Stop Details",
+            title: "노선 선택",
             onDismiss: {
                 presentationMode.wrappedValue.dismiss()
             },

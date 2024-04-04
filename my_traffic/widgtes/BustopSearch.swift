@@ -10,12 +10,14 @@ import Foundation
 struct BusStop: Identifiable {
     var id = UUID()
     
+    let nodeid: String
     let nodenm: String
     let nodeno: Int
 }
 
 extension BusStop: Codable {
     private enum CodingKeys: String, CodingKey {
+        case nodeid
         case nodenm
         case nodeno
     }
@@ -41,7 +43,7 @@ struct BusStopData: Codable {
 }
 
 struct BusStopSearch {
-    func fetchBusStopData(query: String, completion: @escaping (Result<[(nodenm: String, nodeno: Int)], Error>) -> Void) {
+    func fetchBusStopData(query: String, completion: @escaping (Result<[(nodeid: String, nodenm: String, nodeno: Int)], Error>) -> Void) {
         let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
         //let apiKey_decoded = apiKey.removingPercentEncoding
         let pageNo = "1"
@@ -89,7 +91,7 @@ struct BusStopSearch {
                 
                 // nodenm과 nodeno 추출
                 let busStops = response.response.body.items.item.map { item in
-                    return (nodenm: item.nodenm, nodeno: item.nodeno)
+                    return (nodeid: item.nodeid, nodenm: item.nodenm, nodeno: item.nodeno)
                 }
                 
                 completion(.success(busStops))

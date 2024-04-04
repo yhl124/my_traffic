@@ -53,7 +53,7 @@ class BusStopViewModel: ObservableObject {
                 switch result {
                 case .success(let data):
                     // 데이터를 직접 할당
-                    self.busStops = data.map { BusStop(nodenm: $0.nodenm, nodeno: $0.nodeno) }
+                    self.busStops = data.map { BusStop(nodeid: $0.nodeid, nodenm: $0.nodenm, nodeno: $0.nodeno) }
                 case .failure(let error):
                     print("Error fetching bus stop data: \(error.localizedDescription)")
                 }
