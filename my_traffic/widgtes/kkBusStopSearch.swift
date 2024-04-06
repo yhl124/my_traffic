@@ -29,7 +29,7 @@ struct kkBusStopSearch {
         
         let encodedAndReplace = encodedStr.replacingOccurrences(of: "%25", with: "%")
         guard let url = URL(string: encodedAndReplace) else {return}
-        
+                
         Task {
             do {
                 let xmlData = try await fetchXMLData(from: url)
