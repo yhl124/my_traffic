@@ -10,14 +10,15 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>NSExceptionAllowsInsecureHTTPLoads</key>
-			<true/>
-			<key>NSExceptionRequiresForwardSecrecy</key>
-			<false/>
-			<key>NSIncludesSubdomains</key>
-			<true/>
-			<key>apis.data.go.kr/6410000/busstationservice</key>
-			<dict/>
+			<key>apis.data.go.kr/6410000</key>
+			<dict>
+				<key>NSExceptionAllowInsecureHTTPLoads</key>
+				<true/>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 		</dict>
 	</dict>
 </dict>

@@ -5,36 +5,40 @@
 //  Created by yhl on 4/6/24.
 //
 //
+import SwiftUI
 import Foundation
 
-struct BusStationInfo: Identifiable{
-    var id = UUID()
+class XMLParserDelegateHelper: NSObject, XMLParserDelegate {
+    var currentElement = ""
+    var mobileNo = ""
+    var stationName = ""
+    var stationId = ""
+    var busStations = [BusStationInfo]()
     
-    let mobileNo: String
-    let stationName: String
-    let stationId: String
-}
-
-func parseXMLData(_ data: Data) -> [BusStationInfo] {
-    var busStationInfoList: [BusStationInfo] = []
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+        currentElement = elementName
+    }
     
-    if let xmlDocument = try? XMLDocument(data: data) {
-        if let root = xmlDocument.root {
-            let busStationLists = root.nodes(forXPath: "/response/msgBody/busStationList")
-            for busStationList in busStationLists {
-                if let mobileNo = busStationList.nodes(forXPath: "mobileNo")[0].stringValue,
-                   let stationName = busStationList.nodes(forXPath: "stationName")[0].stringValue,
-                   let stationId = busStationList.nodes(forXPath: "stationId")[0].stringValue {
-                    let busStationInfo = BusStationInfo(mobileNo: mobileNo, stationName: stationName, stationId: stationId)
-                    busStationInfoList.append(busStationInfo)
-                }
-            }
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        switch currentElement {
+        case "mobileNo":
+            mobileNo = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        case "stationName":
+            stationName = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        case "stationId":
+            stationId = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        default:
+            break
         }
     }
     
-    return busStationInfoList
+    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        if elementName == "busStationList" {
+            let busStation = BusStationInfo(mobileNo: mobileNo, stationName: stationName, stationId: stationId)
+            busStations.append(busStation)
+        }
+    }
 }
-
 
 //func fetchXMLData(from url: URL) async throws -> Data {
 //    let (data, response) = try await URLSession.shared.data(from: url)
