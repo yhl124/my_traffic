@@ -16,17 +16,18 @@ struct BusStationInfo: Identifiable{
 
 class BusStopViewModel: ObservableObject {
     @Published var busStops: [BusStationInfo] = []
-//    @Published var searchQuery: String = "" {
-//        didSet {
-//            searchBusStops() // searchQuery가 업데이트될 때마다 검색을 다시 수행
-//        }
-//    }
     
     func searchBusStops(keyword: String) {
         let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
 //        let keyword = searchQuery
-        let urlString = "https://apis.data.go.kr/6410000/busstationservice/getBusStationList?serviceKey=\(apiKey)&keyword=\(keyword)"
+//        let urlString = "https://apis.data.go.kr/6410000/busstationservice/getBusStationList?serviceKey=\(apiKey)&keyword=\(keyword)"
         
+        guard let encodedKeyword = keyword.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            print("Failed to encode keyword")
+            return
+        }
+        let urlString = "https://apis.data.go.kr/6410000/busstationservice/getBusStationList?serviceKey=\(apiKey)&keyword=\(encodedKeyword)"
+        // keyword를 사용하여 URL 생성
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
             return
@@ -43,16 +44,6 @@ class BusStopViewModel: ObservableObject {
             }
         }.resume()
     }
-    
-//    private func generateURL(keyword: String) -> URL {
-//        // 여기에 API URL 생성 로직을 추가합니다.
-//        // 예시로 URLComponents를 사용합니다.
-//        let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
-//        let keyword = searchQuery
-//        let baseURL = "https://apis.data.go.kr/6410000/busstationservice/getBusStationList?serviceKey=\(apiKey)&keyword=\(keyword)"
-//        
-//        return URL(string: baseURL)!
-//    }
     
     private func parseXMLData(data: Data) -> [BusStationInfo] {
         var stations = [BusStationInfo]()

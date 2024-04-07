@@ -17,9 +17,7 @@ struct BusView: View {
     var body: some View {
         VStack {
             NavigationView {
-                List(viewModel.busStops.filter {
-                    searchQuery.isEmpty ? true : $0.stationName.localizedCaseInsensitiveContains(searchQuery)
-                }) { station in
+                List(viewModel.busStops) { station in
                     VStack(alignment: .leading) {
                         Text(station.stationName)
                         Text(station.mobileNo)
@@ -37,34 +35,11 @@ struct BusView: View {
         .onSubmit(of: .search) {
             viewModel.searchBusStops(keyword: searchQuery)
         }
-//        .onAppear {
-//            viewModel.searchQuery = searchQuery // 검색 쿼리를 업데이트
-//        }
-        .sheet(item: $selectedBusStop) { busStop in
-            Text("Details for \(busStop.stationName)")
+        .sheet(item: $selectedBusStop) { BusStationInfo in
+            BusStopDetailView(busStop: BusStationInfo)
         }
     }
 }
-
-//class BusStopViewModel: ObservableObject {
-//    @Published var searchQuery = ""
-//    @Published var busStops: [BusStationInfo] = []
-//
-//    func searchBusStops() {
-//        kkBusStopSearch().kkfetchBusStopData(query: searchQuery) { result in
-//            DispatchQueue.main.async {
-//                switch result {
-//                case .success(let data):
-//                    // 데이터를 직접 할당
-//                    self.busStops = data.map { BusStationInfo(mobileNo: $0.mobileNo, stationName: $0.stationName, stationId: $0.stationId) }
-//                case .failure(let error):
-//                    print("Error fetching bus stop data: \(error.localizedDescription)")
-//                }
-//            }
-//        }
-//    }
-//}
-
 
 
 //struct BusView: View {
