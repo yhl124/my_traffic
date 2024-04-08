@@ -6,14 +6,6 @@
 //
 import Foundation
 
-struct BusStationInfo: Identifiable{
-    var id = UUID()
-    
-    let mobileNo: String
-    let stationName: String
-    let stationId: String
-}
-
 class BusStopViewModel: ObservableObject {
     @Published var busStops: [BusStationInfo] = []
     
