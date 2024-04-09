@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+
 struct BusStopDetailView: View {
     var busStop: BusStationInfo
     @StateObject var viewModel = BusRouteViewModel()
@@ -30,15 +31,59 @@ struct BusStopDetailView: View {
                 presentationMode.wrappedValue.dismiss()
             },
             onConfirm: {
-                // Do something with selectedRoutes
+                saveSelectedRoutesToCoreData()
                 presentationMode.wrappedValue.dismiss()
-            }
+            },
+            selectedStationName: busStop.stationName,
+            selectedMobileNo: busStop.mobileNo
         )
         .onAppear {
             viewModel.searchBusRoutes(stationId: busStop.stationId)
         }
     }
 }
+
+extension BusStopDetailView {
+    func saveSelectedRoutesToCoreData() {
+        let context = PersistenceController.shared.container.viewContext
+        let newBusStop = BusStop(context: context)
+        newBusStop.mobileNo = busStop.mobileNo
+        newBusStop.stationName = busStop.stationName
+        
+        for selectedRoute in selectedRoutes {
+            let newBusRoute = BusRoute(context: context)
+            newBusRoute.routeName = selectedRoute.routeName
+            newBusRoute.routeTypeCd = selectedRoute.routeTypeCd
+            // 추가적인 프로퍼티 설정 가능
+            
+            // BusStop과 BusRoute 간의 관계 설정
+            newBusStop.addToRoutes(newBusRoute)
+        }
+        
+        do {
+            try context.save()
+            print("BusStop and related BusRoutes saved to CoreData")
+        } catch {
+            print("Error saving data to CoreData: \(error.localizedDescription)")
+        }
+    }
+}
+
+//extension BusStop {
+//    //@NSManaged public var mobileNo: String
+//    //@NSManaged public var stationName: String
+//    @NSManaged public var routes: Set<BusRoute> // 이 속성은 CoreData 모델에서 관계로 정의되어야 함
+//}
+
+extension BusStop {
+    // 이 메서드는 CoreData에 새로운 노선을 추가합니다.
+    func addRoute(_ route: BusRoute) {
+        let routes = self.mutableSetValue(forKey: #keyPath(BusStop.routes))
+        routes.add(route)
+    }
+}
+
+
 
 struct BusRouteRow: View {
     var route: BusRouteInfo
