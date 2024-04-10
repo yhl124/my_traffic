@@ -24,7 +24,7 @@ struct MainView: View {
                     List {
                         ForEach(busStops) { busStop in
                             VStack(alignment: .leading) {
-                                Text(busStop.stationName ?? "Unknown")
+                                Text("\(busStop.stationName ?? "Unknown") (\(busStop.mobileNo ?? "No Mobile No"))")
                                     .font(.headline)
                                 ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
                                     Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
