@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct RealTimeTrafficBundle: WidgetBundle {
     var body: some Widget {
-        RealTimeTraffic()
+        RealTimeTrafficWidget()
         RealTimeTrafficLiveActivity()
     }
 }
