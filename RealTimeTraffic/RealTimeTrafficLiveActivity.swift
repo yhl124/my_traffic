@@ -2,7 +2,7 @@
 //  RealTimeTrafficLiveActivity.swift
 //  RealTimeTraffic
 //
-//  Created by yhl on 4/10/24.
+//  Created by yhl on 4/13/24.
 //
 
 import ActivityKit
@@ -72,9 +72,9 @@ extension RealTimeTrafficAttributes.ContentState {
      }
 }
 
-//#Preview("Notification", as: .content, using: RealTimeTrafficAttributes.preview) {
-//   RealTimeTrafficLiveActivity()
-//} contentStates: {
-//    RealTimeTrafficAttributes.ContentState.smiley
-//    RealTimeTrafficAttributes.ContentState.starEyes
-//}
+#Preview("Notification", as: .content, using: RealTimeTrafficAttributes.preview) {
+   RealTimeTrafficLiveActivity()
+} contentStates: {
+    RealTimeTrafficAttributes.ContentState.smiley
+    RealTimeTrafficAttributes.ContentState.starEyes
+}

@@ -73,6 +73,7 @@ struct BusStopDetailView: View {
     
     func saveSelectedRoutesToCoreData() {
         let context = PersistenceController.shared.container.viewContext
+//        let context = coreDataManager.persistentContainer.viewContext
         
         // 중복을 확인하기 위해 이미 저장된 버스 정류장들을 가져옵니다.
         let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()

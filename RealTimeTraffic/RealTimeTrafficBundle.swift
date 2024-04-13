@@ -2,7 +2,7 @@
 //  RealTimeTrafficBundle.swift
 //  RealTimeTraffic
 //
-//  Created by yhl on 4/10/24.
+//  Created by yhl on 4/13/24.
 //
 
 import WidgetKit
@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct RealTimeTrafficBundle: WidgetBundle {
     var body: some Widget {
-        RealTimeTrafficWidget()
+        RealTimeTraffic()
         RealTimeTrafficLiveActivity()
     }
 }
