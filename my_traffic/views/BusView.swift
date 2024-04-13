@@ -14,6 +14,7 @@ struct BusView: View {
     @State private var selectedBusStop: BusStationInfo?
     @State private var searchQuery: String = ""
     
+    
     var body: some View {
         VStack {
             NavigationView {

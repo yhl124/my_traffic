@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 import CoreData
 
-
 struct BusStopDetailView: View {
     var busStop: BusStationInfo
     @StateObject var viewModel = BusRouteViewModel()
@@ -36,7 +35,9 @@ struct BusStopDetailView: View {
                 },
                 onConfirm: {
                     saveSelectedRoutesToCoreData()
-                    presentationMode.wrappedValue.dismiss()
+                    if !showAlert { // showAlert가 false인 경우에만 화면을 닫습니다.
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 },
                 selectedStationName: busStop.stationName,
                 selectedMobileNo: busStop.mobileNo
@@ -49,9 +50,17 @@ struct BusStopDetailView: View {
                     title: Text("알림"),
                     message: Text("이미 등록된 정류장입니다."),
                     dismissButton: .default(Text("확인")) {
-                        alertDismissed = true
+                        // showAlert를 false로 설정하여 alert를 닫습니다.
+                        // alertDismissed 상태는 여기서 직접 사용하지 않습니다.
                     }
                 )
+            }
+            .onChange(of: showAlert) { newValue in
+                // showAlert의 값이 변경될 때만 presentationMode를 처리합니다.
+                // showAlert이 false가 되면, 즉 alert가 닫히면 presentationMode를 통해 화면을 닫습니다.
+                if !newValue {
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
         }
         .onDisappear {
@@ -74,6 +83,7 @@ struct BusStopDetailView: View {
             
             // 이미 등록된 정류장이 있는지 확인합니다.
             guard existingStops.isEmpty else {
+                alertDismissed = true // showAlert를 true로 설정하기 전에 이 값을 true로 설정합니다.
                 showAlert = true
                 return
             }
@@ -92,6 +102,7 @@ struct BusStopDetailView: View {
                 // BusStop과 BusRoute 간의 관계 설정
                 newBusStop.addToRoutes(newBusRoute)
             }
+            
             
             try context.save()
             print("BusStop and related BusRoutes saved to CoreData")
