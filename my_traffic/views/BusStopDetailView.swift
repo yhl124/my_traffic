@@ -72,11 +72,56 @@ struct BusStopDetailView: View {
     }
     
     func saveSelectedRoutesToCoreData() {
-        if let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
-            print("Documents Directory: \(documentsDirectoryURL)")
-        }
+//        // App Group의 컨테이너 내에 Core Data 스택 구성
+//        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic") else { return }
+//        let storeURL = containerURL.appendingPathComponent("my_traffic.sqlite")
+//        let description = NSPersistentStoreDescription(url: storeURL)
+//        
+//        let container = NSPersistentContainer(name: "my_traffic")
+//        container.persistentStoreDescriptions = [description]
+//        container.loadPersistentStores { (storeDescription, error) in
+//            if let error = error {
+//                // 오류 처리
+//                print("Unresolved error \(error)")
+//            }
+//        }
+//        
+//        let context = container.viewContext
+//        
+//        // 중복된 정류장이 있는지 확인
+//        let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
+//        fetchRequest.predicate = NSPredicate(format: "stationName == %@", busStop.stationName)
+//        
+//        do {
+//            let matchingStops = try context.fetch(fetchRequest)
+//            if matchingStops.isEmpty {
+//                // 새로운 BusStop 객체 생성
+//                let newBusStop = BusStop(context: context)
+//                newBusStop.stationName = busStop.stationName
+//                newBusStop.mobileNo = busStop.mobileNo
+//                
+//                // 선택된 노선들을 Core Data에 저장
+//                for routeInfo in selectedRoutes {
+//                    let newBusRoute = BusRoute(context: context)
+//                    newBusRoute.routeName = routeInfo.routeName
+//                    newBusRoute.routeTypeCd = routeInfo.routeTypeCd
+//                    
+//                    newBusStop.addToRoutes(newBusRoute)
+//                    //                    newBusRoute.busStop = newBusStop // 1:N 관계 설정
+//                }
+//                
+//                try context.save()
+//            } else {
+//                // 중복된 정류장이 있으면 저장하지 않음
+//                self.showAlert = true
+//            }
+//        } catch {
+//            print("저장 중 오류 발생: \(error)")
+//        }
+//    }
+        
         let context = PersistenceController.shared.container.viewContext
-//        let context = coreDataManager.persistentContainer.viewContext
+//        let context = CoreDataManager.shared.persistentContainer.viewContext
         
         // 중복을 확인하기 위해 이미 저장된 버스 정류장들을 가져옵니다.
         let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
@@ -248,13 +293,13 @@ struct BusRouteRow: View {
 //    @NSManaged public var routes: Set<BusRoute> // 이 속성은 CoreData 모델에서 관계로 정의되어야 함
 //}
 
-extension BusStop {
-    // 이 메서드는 CoreData에 새로운 노선을 추가합니다.
-    func addRoute(_ route: BusRoute) {
-        let routes = self.mutableSetValue(forKey: #keyPath(BusStop.routes))
-        routes.add(route)
-    }
-}
+//extension BusStop {
+//    // 이 메서드는 CoreData에 새로운 노선을 추가합니다.
+//    func addRoute(_ route: BusRoute) {
+//        let routes = self.mutableSetValue(forKey: #keyPath(BusStop.routes))
+//        routes.add(route)
+//    }
+//}
 
 
 //
