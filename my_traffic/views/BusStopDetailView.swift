@@ -72,6 +72,9 @@ struct BusStopDetailView: View {
     }
     
     func saveSelectedRoutesToCoreData() {
+        if let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
+            print("Documents Directory: \(documentsDirectoryURL)")
+        }
         let context = PersistenceController.shared.container.viewContext
 //        let context = coreDataManager.persistentContainer.viewContext
         

@@ -7,7 +7,7 @@
     <entity name="BusStop" representedClassName="BusStop" syncable="YES" codeGenerationType="class">
         <attribute name="mobileNo" optional="YES" attributeType="String"/>
         <attribute name="stationName" optional="YES" attributeType="String"/>
-        <relationship name="routes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BusRoute"/>
+        <relationship name="routes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BusRoute"/>
     </entity>
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

@@ -15,7 +15,7 @@ struct MainView: View {
         sortDescriptors: [],
         animation: .default)
     private var busStops: FetchedResults<BusStop>
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
