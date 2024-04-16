@@ -72,6 +72,58 @@ struct BusStopDetailView: View {
     }
     
     func saveSelectedRoutesToCoreData() {
+        /*새로 만드는거*/
+        let context = CoreDataManager.shared.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "BusStop", in: context)
+        let entity2 = NSEntityDescription.entity(forEntityName: "BusRoute", in: context)
+        
+        if let entity{
+            let busstop = NSManagedObject(entity: entity, insertInto: context)
+            busstop.setValue(busStop.stationName, forKey: "stationName")
+            busstop.setValue(busStop.mobileNo, forKey: "mobileNo")
+            
+//            for selectedRoute in selectedRoutes {
+//                if let entity2{
+//                    let busroute = NSManagedObject(entity: entity2, insertInto: context)
+//                    busroute.setValue(selectedRoute.routeName, forKey: "routeName")
+//                    busroute.setValue(selectedRoute.routeTypeCd, forKey: "routeTypeCd")
+//                    
+//                    //busstop : busroute = 1 : N 관계 설정
+//                    busstop.mutableSetValue(forKey: "routes").add(busroute)
+////                    busstop.addToRoute(busroute)
+//                }
+//            }
+        }
+        
+//        let context = CoreDataManager.shared.persistentContainer.viewContext
+//        // Create a new BusStop instance
+//        let busStopEntity = NSEntityDescription.entity(forEntityName: "BusStop", in: context)!
+//        let busStop = NSManagedObject(entity: busStopEntity, insertInto: context) as! BusStop
+//        busStop.stationName = busStop.stationName // Assign the stationName
+//        busStop.mobileNo = busStop.mobileNo // Assign the mobileNo
+//        
+//        // Create BusRoute instances and associate them with the BusStop
+//        for selectedRoute in selectedRoutes {
+//            let busRouteEntity = NSEntityDescription.entity(forEntityName: "BusRoute", in: context)!
+//            let busRoute = NSManagedObject(entity: busRouteEntity, insertInto: context) as! BusRoute
+//            busRoute.routeName = selectedRoute.routeName // Assign the routeName
+//            busRoute.routeTypeCd = selectedRoute.routeTypeCd // Assign the routeTypeCd
+//            
+//            // Associate the BusRoute with the BusStop
+//            busStop.addToRoutes(busRoute)
+////            busRoute.busStop = busStop
+//        }
+        
+        do{
+            print(context)
+            try context.save()
+        } catch {
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+        
+        
+        
 //        // App Group의 컨테이너 내에 Core Data 스택 구성
 //        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic") else { return }
 //        let storeURL = containerURL.appendingPathComponent("my_traffic.sqlite")
@@ -120,44 +172,44 @@ struct BusStopDetailView: View {
 //        }
 //    }
         
-        let context = PersistenceController.shared.container.viewContext
+//        let context = PersistenceController.shared.container.viewContext
 //        let context = CoreDataManager.shared.persistentContainer.viewContext
-        
-        // 중복을 확인하기 위해 이미 저장된 버스 정류장들을 가져옵니다.
-        let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "mobileNo == %@", busStop.mobileNo)
-        
-        do {
-            let existingStops = try context.fetch(fetchRequest)
-            
-            // 이미 등록된 정류장이 있는지 확인합니다.
-            guard existingStops.isEmpty else {
-                alertDismissed = true // showAlert를 true로 설정하기 전에 이 값을 true로 설정합니다.
-                showAlert = true
-                return
-            }
-            
-            // 새로운 버스 정류장을 생성하고 저장합니다.
-            let newBusStop = BusStop(context: context)
-            newBusStop.mobileNo = busStop.mobileNo
-            newBusStop.stationName = busStop.stationName
-            
-            for selectedRoute in selectedRoutes {
-                let newBusRoute = BusRoute(context: context)
-                newBusRoute.routeName = selectedRoute.routeName
-                newBusRoute.routeTypeCd = selectedRoute.routeTypeCd
-                // 추가적인 프로퍼티 설정 가능
-                
-                // BusStop과 BusRoute 간의 관계 설정
-                newBusStop.addToRoutes(newBusRoute)
-            }
-            
-            
-            try context.save()
-            print("BusStop and related BusRoutes saved to CoreData")
-        } catch {
-            print("Error saving data to CoreData: \(error.localizedDescription)")
-        }
+//        
+//        // 중복을 확인하기 위해 이미 저장된 버스 정류장들을 가져옵니다.
+//        let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
+//        fetchRequest.predicate = NSPredicate(format: "mobileNo == %@", busStop.mobileNo)
+//        
+//        do {
+//            let existingStops = try context.fetch(fetchRequest)
+//            
+//            // 이미 등록된 정류장이 있는지 확인합니다.
+//            guard existingStops.isEmpty else {
+//                alertDismissed = true // showAlert를 true로 설정하기 전에 이 값을 true로 설정합니다.
+//                showAlert = true
+//                return
+//            }
+//            
+//            // 새로운 버스 정류장을 생성하고 저장합니다.
+//            let newBusStop = BusStop(context: context)
+//            newBusStop.mobileNo = busStop.mobileNo
+//            newBusStop.stationName = busStop.stationName
+//            
+//            for selectedRoute in selectedRoutes {
+//                let newBusRoute = BusRoute(context: context)
+//                newBusRoute.routeName = selectedRoute.routeName
+//                newBusRoute.routeTypeCd = selectedRoute.routeTypeCd
+//                // 추가적인 프로퍼티 설정 가능
+//                
+//                // BusStop과 BusRoute 간의 관계 설정
+//                newBusStop.addToRoutes(newBusRoute)
+//            }
+//            
+//            
+//            try context.save()
+//            print("BusStop and related BusRoutes saved to CoreData")
+//        } catch {
+//            print("Error saving data to CoreData: \(error.localizedDescription)")
+//        }
     }
 }
 
