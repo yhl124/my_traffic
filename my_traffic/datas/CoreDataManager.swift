@@ -9,6 +9,21 @@ import Foundation
 import CoreData
 import UIKit
 
+//적용 테스트 필요
+//lazy var persistentContainer: NSPersistentCloudKitContainer = {
+//    let container = NSPersistentCloudKitContainer(name: "YourModelName")
+//    let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.example.myapp.sharedcontainer")!.appendingPathComponent("YourModelName.sqlite")
+//    let storeDescription = NSPersistentStoreDescription(url: storeURL)
+//    container.persistentStoreDescriptions = [storeDescription]
+//    container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+//        if let error = error as NSError? {
+//            fatalError("Unresolved error \(error), \(error.userInfo)")
+//        }
+//    })
+//    return container
+//}()
+
+
 class CoreDataManager {
     // 👉 앱의 라이프사이클 동안 한번 생성하게되면 중복되지 않고 어디서든 동일한 인스턴스를 호출할 수 있도록 싱글톤 패턴을 적용.
     static let shared = CoreDataManager()
@@ -16,14 +31,10 @@ class CoreDataManager {
 
     // ✅ AppGroup 을 활용하여 CoreData 로 저장한 데이터를 공유.
     private let appGroup = "group.com.mytraffic"
-
     lazy var persistentContainer: NSPersistentContainer = {
-
         // ✅ App Group identifier 와 연결된 container directory 를 반환. 즉, 해당 group 의 공유 directory 의 파일 시스템 내 위치를 지정하는 NSURL 인스턴스를 반환.
         guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) else { fatalError("Shared file container could not be created.") }
-
         let storeURL = url.appending(path: "my_traffic.sqlite")
-
         // ✅ persistent store 를 생성 및 로드하는데 사용되는 description object.
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
 
