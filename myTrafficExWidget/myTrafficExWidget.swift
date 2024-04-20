@@ -9,15 +9,24 @@ import WidgetKit
 import SwiftUI
 import CoreData
 
+
+////busstop만 출력하는 코드
 struct BusStopWidgetEntryView : View {
     var entry: BusStopProvider.Entry
 
     var body: some View {
         VStack {
             if let busStops = entry.busStops {
-                ForEach(busStops, id: \.self) { busStop in
-                    Text(busStop.stationName ?? "")
-                    Text(busStop.mobileNo ?? "")
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 1) {
+                    ForEach(busStops, id: \.self) { busStop in
+                        VStack(alignment: .leading) {
+                            Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                        }
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                    }
                 }
             } else {
                 Text("No bus stops found")
@@ -74,7 +83,7 @@ struct BusStopProvider: TimelineProvider {
             let context = container.viewContext
             
             // Fetch data from CoreData here
-            let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
+            let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
             do {
                 let busStops = try context.fetch(fetchRequest)
                 let currentDate = Date()
@@ -89,11 +98,18 @@ struct BusStopProvider: TimelineProvider {
         }
     }
 }
+
 struct BusStopEntry: TimelineEntry {
     let date: Date
     let busStops: [BusStop]?
 }
 
+////xcode에서 제공하는 기본 코드
+
+//class BusStop: NSManagedObject {
+//    @NSManaged var stationName: String?
+//    @NSManaged var mobileNo: String?
+//}
 
 //struct Provider: AppIntentTimelineProvider {
 //    func placeholder(in context: Context) -> SimpleEntry {
