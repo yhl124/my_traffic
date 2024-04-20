@@ -37,8 +37,8 @@ struct PersistenceController {
         }
         else {
             // App Group의 공유 컨테이너 URL을 얻습니다.
-            if let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "YOUR_APP_GROUP_IDENTIFIER") {
-                let storeURL = appGroupURL.appendingPathComponent("test_coredata.sqlite")
+            if let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic") {
+                let storeURL = appGroupURL.appendingPathComponent("my_traffic.sqlite")
                 container.persistentStoreDescriptions.first!.url = storeURL
             }
         }

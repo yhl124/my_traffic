@@ -14,20 +14,13 @@ struct BusStopWidgetEntryView : View {
 
     var body: some View {
         VStack {
-            Text("Bus Stops")
-                .font(.headline)
-                .padding()
-            
             if let busStops = entry.busStops {
                 ForEach(busStops, id: \.self) { busStop in
                     Text(busStop.stationName ?? "")
-                        .padding()
                     Text(busStop.mobileNo ?? "")
-                        .padding()
                 }
             } else {
                 Text("No bus stops found")
-                    .padding()
             }
         }
     }
@@ -59,6 +52,13 @@ struct BusStopProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<BusStopEntry>) -> ()) {
         var entries: [BusStopEntry] = []
+        
+//        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic") {
+//            print("앱 그룹 컨테이너 경로: \(containerURL.path)")
+//        } else {
+//            print("앱 그룹 컨테이너 경로를 찾을 수 없습니다.")
+//        }
+
 
         // Access CoreData in the app group container
         let container = NSPersistentContainer(name: "my_traffic")
