@@ -35,6 +35,13 @@ struct PersistenceController {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
+        else {
+            // App Group의 공유 컨테이너 URL을 얻습니다.
+            if let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "YOUR_APP_GROUP_IDENTIFIER") {
+                let storeURL = appGroupURL.appendingPathComponent("test_coredata.sqlite")
+                container.persistentStoreDescriptions.first!.url = storeURL
+            }
+        }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.

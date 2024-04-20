@@ -72,15 +72,18 @@ struct BusStopDetailView: View {
     }
     
     func saveSelectedRoutesToCoreData() {
-        /*새로 만드는거*/
-        let context = CoreDataManager.shared.persistentContainer.viewContext
-        let entity = NSEntityDescription.entity(forEntityName: "BusStop", in: context)
-        let entity2 = NSEntityDescription.entity(forEntityName: "BusRoute", in: context)
-        
-        if let entity{
-            let busstop = NSManagedObject(entity: entity, insertInto: context)
-            busstop.setValue(busStop.stationName, forKey: "stationName")
-            busstop.setValue(busStop.mobileNo, forKey: "mobileNo")
+//        /*새로 만드는거*/
+//        let context = CoreDataManager.shared.persistentContainer.viewContext
+//        let entity = NSEntityDescription.entity(forEntityName: "BusStop", in: context)
+//        let entity2 = NSEntityDescription.entity(forEntityName: "BusRoute", in: context)
+//        print("save")
+//        
+//        if let entity{
+//            let busstop = NSManagedObject(entity: entity, insertInto: context)
+//            busstop.setValue(busStop.stationName, forKey: "stationName")
+//            print(busStop.stationName)
+//            busstop.setValue(busStop.mobileNo, forKey: "mobileNo")
+//            print(busStop.mobileNo)
             
 //            for selectedRoute in selectedRoutes {
 //                if let entity2{
@@ -93,7 +96,7 @@ struct BusStopDetailView: View {
 ////                    busstop.addToRoute(busroute)
 //                }
 //            }
-        }
+//        }
         
 //        let context = CoreDataManager.shared.persistentContainer.viewContext
 //        // Create a new BusStop instance
@@ -114,13 +117,13 @@ struct BusStopDetailView: View {
 ////            busRoute.busStop = busStop
 //        }
         
-        do{
-            print(context)
-            try context.save()
-        } catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-        }
+//        do{
+////            print(context)
+//            try context.save()
+//        } catch {
+//            let nserror = error as NSError
+//            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+//        }
         
         
         
@@ -171,45 +174,44 @@ struct BusStopDetailView: View {
 //            print("저장 중 오류 발생: \(error)")
 //        }
 //    }
+        //========처음에 쓰던거, 일단 된거 같기도??=============
+        let context = PersistenceController.shared.container.viewContext
+       
+        // 중복을 확인하기 위해 이미 저장된 버스 정류장들을 가져옵니다.
+        let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "mobileNo == %@", busStop.mobileNo)
         
-//        let context = PersistenceController.shared.container.viewContext
-//        let context = CoreDataManager.shared.persistentContainer.viewContext
-//        
-//        // 중복을 확인하기 위해 이미 저장된 버스 정류장들을 가져옵니다.
-//        let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
-//        fetchRequest.predicate = NSPredicate(format: "mobileNo == %@", busStop.mobileNo)
-//        
-//        do {
-//            let existingStops = try context.fetch(fetchRequest)
-//            
-//            // 이미 등록된 정류장이 있는지 확인합니다.
-//            guard existingStops.isEmpty else {
-//                alertDismissed = true // showAlert를 true로 설정하기 전에 이 값을 true로 설정합니다.
-//                showAlert = true
-//                return
-//            }
-//            
-//            // 새로운 버스 정류장을 생성하고 저장합니다.
-//            let newBusStop = BusStop(context: context)
-//            newBusStop.mobileNo = busStop.mobileNo
-//            newBusStop.stationName = busStop.stationName
-//            
-//            for selectedRoute in selectedRoutes {
-//                let newBusRoute = BusRoute(context: context)
-//                newBusRoute.routeName = selectedRoute.routeName
-//                newBusRoute.routeTypeCd = selectedRoute.routeTypeCd
-//                // 추가적인 프로퍼티 설정 가능
-//                
-//                // BusStop과 BusRoute 간의 관계 설정
-//                newBusStop.addToRoutes(newBusRoute)
-//            }
-//            
-//            
-//            try context.save()
-//            print("BusStop and related BusRoutes saved to CoreData")
-//        } catch {
-//            print("Error saving data to CoreData: \(error.localizedDescription)")
-//        }
+        do {
+            let existingStops = try context.fetch(fetchRequest)
+            
+            // 이미 등록된 정류장이 있는지 확인합니다.
+            guard existingStops.isEmpty else {
+                alertDismissed = true // showAlert를 true로 설정하기 전에 이 값을 true로 설정합니다.
+                showAlert = true
+                return
+            }
+            
+            // 새로운 버스 정류장을 생성하고 저장합니다.
+            let newBusStop = BusStop(context: context)
+            newBusStop.mobileNo = busStop.mobileNo
+            newBusStop.stationName = busStop.stationName
+            
+            for selectedRoute in selectedRoutes {
+                let newBusRoute = BusRoute(context: context)
+                newBusRoute.routeName = selectedRoute.routeName
+                newBusRoute.routeTypeCd = selectedRoute.routeTypeCd
+                // 추가적인 프로퍼티 설정 가능
+                
+                // BusStop과 BusRoute 간의 관계 설정
+                newBusStop.addToRoutes(newBusRoute)
+            }
+            
+            
+            try context.save()
+            print("BusStop and related BusRoutes saved to CoreData")
+        } catch {
+            print("Error saving data to CoreData: \(error.localizedDescription)")
+        }
     }
 }
 
