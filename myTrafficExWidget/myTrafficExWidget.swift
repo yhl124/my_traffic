@@ -9,8 +9,6 @@ import WidgetKit
 import SwiftUI
 import CoreData
 
-
-////busstop만 출력하는 코드
 struct BusStopWidgetEntryView : View {
     var entry: BusStopProvider.Entry
 
@@ -23,6 +21,14 @@ struct BusStopWidgetEntryView : View {
                             Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
                                 .lineLimit(1)
                                 .truncationMode(.tail)
+                            // BusRoute 정보 추가
+                            if let routes = busStop.routes?.allObjects as? [BusRoute] {
+                                ForEach(routes, id: \.self) { route in
+                                    Text(route.routeName ?? "")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
                         }
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(8)
@@ -34,6 +40,7 @@ struct BusStopWidgetEntryView : View {
         }
     }
 }
+
 
 struct myTrafficExWidget: Widget {
     let kind: String = "BusStopWidget"
@@ -62,14 +69,6 @@ struct BusStopProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<BusStopEntry>) -> ()) {
         var entries: [BusStopEntry] = []
         
-//        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic") {
-//            print("앱 그룹 컨테이너 경로: \(containerURL.path)")
-//        } else {
-//            print("앱 그룹 컨테이너 경로를 찾을 수 없습니다.")
-//        }
-
-
-        // Access CoreData in the app group container
         let container = NSPersistentContainer(name: "my_traffic")
         let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic")!.appendingPathComponent("my_traffic.sqlite")
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
@@ -82,7 +81,6 @@ struct BusStopProvider: TimelineProvider {
             
             let context = container.viewContext
             
-            // Fetch data from CoreData here
             let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
             do {
                 let busStops = try context.fetch(fetchRequest)
@@ -103,6 +101,102 @@ struct BusStopEntry: TimelineEntry {
     let date: Date
     let busStops: [BusStop]?
 }
+
+
+
+////busstop만 출력하는 코드
+//struct BusStopWidgetEntryView : View {
+//    var entry: BusStopProvider.Entry
+//
+//    var body: some View {
+//        VStack {
+//            if let busStops = entry.busStops {
+//                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 1) {
+//                    ForEach(busStops, id: \.self) { busStop in
+//                        VStack(alignment: .leading) {
+//                            Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
+//                                .lineLimit(1)
+//                                .truncationMode(.tail)
+//                        }
+//                        .background(Color.gray.opacity(0.1))
+//                        .cornerRadius(8)
+//                    }
+//                }
+//            } else {
+//                Text("No bus stops found")
+//            }
+//        }
+//    }
+//}
+//
+//struct myTrafficExWidget: Widget {
+//    let kind: String = "BusStopWidget"
+//
+//    var body: some WidgetConfiguration {
+//        StaticConfiguration(kind: kind, provider: BusStopProvider()) { entry in
+//            BusStopWidgetEntryView(entry: entry)
+//        }
+//        .configurationDisplayName("Bus Stops")
+//        .description("Shows nearby bus stops.")
+//    }
+//}
+//
+//struct BusStopProvider: TimelineProvider {
+//    typealias Entry = BusStopEntry
+//
+//    func placeholder(in context: Context) -> BusStopEntry {
+//        BusStopEntry(date: Date(), busStops: nil)
+//    }
+//
+//    func getSnapshot(in context: Context, completion: @escaping (BusStopEntry) -> ()) {
+//        let entry = BusStopEntry(date: Date(), busStops: nil)
+//        completion(entry)
+//    }
+//
+//    func getTimeline(in context: Context, completion: @escaping (Timeline<BusStopEntry>) -> ()) {
+//        var entries: [BusStopEntry] = []
+//        
+////        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic") {
+////            print("앱 그룹 컨테이너 경로: \(containerURL.path)")
+////        } else {
+////            print("앱 그룹 컨테이너 경로를 찾을 수 없습니다.")
+////        }
+//
+//
+//        // Access CoreData in the app group container
+//        let container = NSPersistentContainer(name: "my_traffic")
+//        let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic")!.appendingPathComponent("my_traffic.sqlite")
+//        let storeDescription = NSPersistentStoreDescription(url: storeURL)
+//        container.persistentStoreDescriptions = [storeDescription]
+//        container.loadPersistentStores { _, error in
+//            guard error == nil else {
+//                print("Error loading store: \(error!)")
+//                return
+//            }
+//            
+//            let context = container.viewContext
+//            
+//            // Fetch data from CoreData here
+//            let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
+//            do {
+//                let busStops = try context.fetch(fetchRequest)
+//                let currentDate = Date()
+//                let entry = BusStopEntry(date: currentDate, busStops: busStops)
+//                entries.append(entry)
+//            } catch {
+//                print("Error fetching bus stops: \(error)")
+//            }
+//
+//            let timeline = Timeline(entries: entries, policy: .atEnd)
+//            completion(timeline)
+//        }
+//    }
+//}
+//
+//struct BusStopEntry: TimelineEntry {
+//    let date: Date
+//    let busStops: [BusStop]?
+//}
 
 ////xcode에서 제공하는 기본 코드
 
