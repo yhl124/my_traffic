@@ -7,6 +7,7 @@
     </entity>
     <entity name="BusStop" representedClassName="BusStop" syncable="YES" codeGenerationType="class">
         <attribute name="mobileNo" optional="YES" attributeType="String"/>
+        <attribute name="stationId" optional="YES" attributeType="String"/>
         <attribute name="stationName" optional="YES" attributeType="String"/>
         <relationship name="routes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BusRoute" inverseName="busStop" inverseEntity="BusRoute"/>
     </entity>

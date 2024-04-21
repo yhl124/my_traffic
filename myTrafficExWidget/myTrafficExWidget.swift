@@ -13,29 +13,39 @@ struct BusStopWidgetEntryView : View {
     var entry: BusStopProvider.Entry
 
     var body: some View {
-        VStack {
-            if let busStops = entry.busStops {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 1) {
-                    ForEach(busStops, id: \.self) { busStop in
-                        VStack(alignment: .leading) {
-                            Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                            // BusRoute 정보 추가
-                            if let routes = busStop.routes?.allObjects as? [BusRoute] {
-                                ForEach(routes, id: \.self) { route in
-                                    Text(route.routeName ?? "")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+        GeometryReader { geometry in
+            VStack {
+                if let busStops = entry.busStops {
+                    // 부모 뷰의 너비를 기반으로 최대 아이템 너비 계산
+                    let itemWidth = (geometry.size.width / 2) - 1 // 1은 그리드 아이템 간의 spacing을 고려
+                    let columns = [
+                        GridItem(.flexible(minimum: itemWidth, maximum: itemWidth)),
+                        GridItem(.flexible(minimum: itemWidth, maximum: itemWidth))
+                    ]
+                    
+                    LazyVGrid(columns: columns, spacing: 1) {
+                        ForEach(busStops, id: \.self) { busStop in
+                            VStack(alignment: .leading) {
+                                Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
+                                    .font(.system(size: 14))
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                // BusRoute 정보 추가
+                                if let routes = busStop.routes?.allObjects as? [BusRoute] {
+                                    ForEach(routes, id: \.self) { route in
+                                        Text(route.routeName ?? "")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
                         }
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(8)
                     }
+                } else {
+                    Text("No bus stops found")
                 }
-            } else {
-                Text("No bus stops found")
             }
         }
     }

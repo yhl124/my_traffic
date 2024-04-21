@@ -195,6 +195,7 @@ struct BusStopDetailView: View {
             let newBusStop = BusStop(context: context)
             newBusStop.mobileNo = busStop.mobileNo
             newBusStop.stationName = busStop.stationName
+            newBusStop.stationId = busStop.stationId
             
             for selectedRoute in selectedRoutes {
                 let newBusRoute = BusRoute(context: context)
