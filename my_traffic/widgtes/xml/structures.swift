@@ -45,4 +45,13 @@ struct BusRouteInfo: Hashable {
     }
 }
 
-
+struct BusRealTimeInfo: Identifiable{
+    var id = UUID()
+    
+    let stationId: String
+    let routeId: String
+    let locationNo1: String
+    let locationNo2: String
+    let predictTime1: String
+    let predictTime2: String
+}

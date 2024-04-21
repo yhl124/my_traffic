@@ -179,7 +179,7 @@ struct BusStopDetailView: View {
        
         // 중복을 확인하기 위해 이미 저장된 버스 정류장들을 가져옵니다.
         let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "mobileNo == %@", busStop.mobileNo)
+        fetchRequest.predicate = NSPredicate(format: "stationId == %@", busStop.stationId)
         
         do {
             let existingStops = try context.fetch(fetchRequest)
@@ -201,6 +201,7 @@ struct BusStopDetailView: View {
                 let newBusRoute = BusRoute(context: context)
                 newBusRoute.routeName = selectedRoute.routeName
                 newBusRoute.routeTypeCd = selectedRoute.routeTypeCd
+                newBusRoute.routeId = selectedRoute.routeId
                 // 추가적인 프로퍼티 설정 가능
                 
                 // BusStop과 BusRoute 간의 관계 설정
