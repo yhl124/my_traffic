@@ -10,10 +10,10 @@ import Foundation
 class BusRealTimeViewModel: ObservableObject {
     @Published var busRealTimeInfos: [BusRealTimeInfo] = []
     
-    func searchBusRealTimes(keyword: String) {
+    func searchBusRealTimes(stationId: String) {
         let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
         
-        guard let encodedStationId = keyword.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+        guard let encodedStationId = stationId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             print("Failed to encode keyword")
             return
         }
@@ -23,6 +23,7 @@ class BusRealTimeViewModel: ObservableObject {
             print("Invalid URL")
             return
         }
+        print(url)
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {
@@ -31,7 +32,9 @@ class BusRealTimeViewModel: ObservableObject {
             }
             
             DispatchQueue.main.async {
+                print(String(data: data, encoding: .utf8) ?? "Data could not be converted to text")
                 self.busRealTimeInfos = self.parseXMLRealTimeData(data: data) // XML 파싱 후 업데이트
+//                print("수신한 XML 데이터:", self.busRealTimeInfos)
             }
         }.resume()
     }
@@ -46,7 +49,7 @@ class BusRealTimeViewModel: ObservableObject {
         if parser.parse() {
             realtimes = xmlDelegate.busRealTimes
         }
-        
+
         return realtimes
     }
 }

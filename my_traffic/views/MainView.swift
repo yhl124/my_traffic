@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MainView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @ObservedObject var busRealTimeViewModel = BusRealTimeViewModel()
     
     @FetchRequest(
         sortDescriptors: [],
@@ -29,6 +30,10 @@ struct MainView: View {
                                 ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
                                     Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
                                 }
+                            }
+                            .onAppear {
+                                // Pass the stationId to BusRealTimeViewModel
+                                busRealTimeViewModel.searchBusRealTimes(stationId: busStop.stationId ?? "")
                             }
                         }
                         .onDelete { indexSet in

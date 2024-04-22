@@ -6,7 +6,7 @@
 //
 
 import Foundation
-//여기 12라인부터 싹다 수정해야됨
+
 class XMLParserDelegateKKRtime: NSObject, XMLParserDelegate {
     var busRealTimes: [BusRealTimeInfo] = []
     var currentElement: String = ""
