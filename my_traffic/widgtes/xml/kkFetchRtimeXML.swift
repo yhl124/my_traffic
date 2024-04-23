@@ -49,7 +49,7 @@ class BusRealTimeViewModel: ObservableObject {
         if parser.parse() {
             realtimes = xmlDelegate.busRealTimes
         }
-
+        print(realtimes)
         return realtimes
     }
 }
