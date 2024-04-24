@@ -7,10 +7,11 @@
 
 import Foundation
 import SwiftUI
+import CoreData
 
 struct MainView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @ObservedObject var busRealTimeViewModel = BusRealTimeViewModel()
+    @StateObject private var busRealTimeViewModel = BusRealTimeViewModel() // BusRealTimeViewModel 추가
     
     @FetchRequest(
         sortDescriptors: [],
@@ -27,15 +28,66 @@ struct MainView: View {
                             VStack(alignment: .leading) {
                                 Text("\(busStop.stationName ?? "Unknown") (\(busStop.mobileNo ?? "No Mobile No"))")
                                     .font(.headline)
+                                
+                                // XML 데이터를 가져오는 부분
                                 ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
-                                    Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
+                                    VStack(alignment: .leading) {
+                                        HStack {
+                                            Text("\(route.routeName ?? "") (\(route.routeTypeCd ?? ""))")
+                                            Spacer()
+                                            // 실시간 정보를 표시합니다.
+                                            if let realTimeInfo = busRealTimeViewModel.busRealTimeInfos.first(where: { $0.routeId == route.routeId }) {
+                                                HStack {
+                                                    Text("\(realTimeInfo.predictTime1)분 ")
+                                                    Text("\(realTimeInfo.predictTime2)분")
+                                                }
+                                            } else {
+                                                Text("실시간 정보 없음")
+                                                    .foregroundColor(.red)
+                                            }
+                                        }
+                                    }
+                                }
+                                .onAppear {
+                                    busRealTimeViewModel.fetchRealTimeInfo()
                                 }
                             }
-                            .onAppear {
-                                // Pass the stationId to BusRealTimeViewModel
-                                busRealTimeViewModel.searchBusRealTimes(stationId: busStop.stationId ?? "")
-                            }
                         }
+            
+//                    List {
+//                        ForEach(busStops) { busStop in
+//                            VStack(alignment: .leading) {
+//                                Text("\(busStop.stationName ?? "Unknown") (\(busStop.mobileNo ?? "No Mobile No"))")
+//                                    .font(.headline)
+//                                ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
+//                                    VStack(alignment: .leading) {
+//                                        HStack {
+//                                            Text("\(route.routeName ?? "") (\(route.routeTypeCd ?? ""))")
+//                                            Spacer()
+//                                            if let realTimeInfo = busRealTimeViewModel.busRealTimeInfos.first(where: { $0.routeId == route.routeId }) {
+//                                                HStack {
+//                                                    Text("\(realTimeInfo.predictTime1)분 ")
+//                                                    Text("\(realTimeInfo.predictTime2)분")
+//                                                }
+//                                            } else {
+//                                                Text("실시간 정보 없음")
+//                                                    .foregroundColor(.red) // 원하는 스타일 및 색상으로 설정
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    List {
+//                        ForEach(busStops) { busStop in
+//                            VStack(alignment: .leading) {
+//                                Text("\(busStop.stationName ?? "Unknown") (\(busStop.mobileNo ?? "No Mobile No"))")
+//                                    .font(.headline)
+//                                ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
+//                                    Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
+//                                }
+//                            }
+//                        }
                         .onDelete { indexSet in
                             for index in indexSet {
                                 let busStop = busStops[index]
