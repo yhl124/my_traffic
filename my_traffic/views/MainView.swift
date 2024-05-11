@@ -9,9 +9,11 @@ import Foundation
 import SwiftUI
 import CoreData
 
+
 struct MainView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var busRealTimeViewModel = BusRealTimeViewModel()
+    @State private var isRefreshing = false // 새로고침 상태 변수 추가
     
     @FetchRequest(sortDescriptors: [], animation: .default)
     private var busStops: FetchedResults<BusStop>
@@ -21,7 +23,7 @@ struct MainView: View {
             ZStack {
                 BackgroundView()
                 VStack {
-                    BusStopListView(busStops: busStops, viewContext: viewContext)
+                    BusStopListView(busStops: busStops, viewContext: viewContext, isRefreshing: $isRefreshing) // 새로고침 상태 전달
                     NavigationButtons()
                 }
             }
@@ -30,6 +32,7 @@ struct MainView: View {
         }
     }
 }
+
 
 struct BackgroundView: View {
     var body: some View {
@@ -40,11 +43,12 @@ struct BackgroundView: View {
 struct BusStopListView: View {
     var busStops: FetchedResults<BusStop>
     var viewContext: NSManagedObjectContext
+    @Binding var isRefreshing: Bool // 새로고침 상태 바인딩
     
     var body: some View {
         List {
             ForEach(busStops) { busStop in
-                BusStopView(busStop: busStop)
+                BusStopView(busStop: busStop, isRefreshing: $isRefreshing) // 새로고침 상태 전달
             }
             .onDelete { indexSet in
                 deleteBusStops(at: indexSet)
@@ -53,6 +57,12 @@ struct BusStopListView: View {
         .listStyle(PlainListStyle())
         .listRowInsets(EdgeInsets())
         .padding(.top)
+        .refreshable {
+            isRefreshing = true // 새로고침 시작
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // 1초 후 새로고침 완료 처리
+                isRefreshing = false
+            }
+        }
     }
     
     private func deleteBusStops(at indexSet: IndexSet) {
@@ -70,17 +80,47 @@ struct BusStopListView: View {
 
 struct BusStopView: View {
     let busStop: BusStop
-    
+    @StateObject var busRealTimeViewModel = BusRealTimeViewModel()
+    @Binding var isRefreshing: Bool
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("\(busStop.stationName ?? "Unknown") (\(busStop.mobileNo ?? "No Mobile No"))")
                 .font(.headline)
-            ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
-                Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
+
+            if busRealTimeViewModel.isLoading {
+                ProgressView()
+            } else {
+                ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
+                    // 버스 노선의 위치 정보를 가져와서 표시
+                    HStack {
+                        Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
+                            .frame(maxWidth: .infinity, alignment: .leading) // 왼쪽 정렬
+                        if let realTimeInfo = busRealTimeViewModel.busRealTimeInfos.first(where: { $0.routeId == route.routeId }) {
+                            Text("\(realTimeInfo.locationNo1)전(\(realTimeInfo.predictTime1)분후) \(realTimeInfo.locationNo2)전(\(realTimeInfo.predictTime2)분후)")
+                                .frame(maxWidth: .infinity, alignment: .trailing) // 오른쪽 정렬
+                        } else {
+                            Text("도착 정보 없음")
+                                .frame(maxWidth: .infinity, alignment: .trailing) // 오른쪽 정렬
+                        }
+                    }
+                }
+            }
+        }
+        .onAppear {
+            // 버스 정류장의 stationId를 사용하여 실시간 정보 검색
+            busRealTimeViewModel.searchBusRealTimes(stationId: busStop.stationId ?? "")
+        }
+        .onChange(of: isRefreshing) { newValue, _ in
+            if !newValue {
+                // 새로고침이 완료되면 실시간 정보를 다시 가져옴
+                busRealTimeViewModel.searchBusRealTimes(stationId: busStop.stationId ?? "")
             }
         }
     }
 }
+
+
 
 struct NavigationButtons: View {
     var body: some View {
