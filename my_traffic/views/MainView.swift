@@ -91,7 +91,19 @@ struct BusStopView: View {
             if busRealTimeViewModel.isLoading {
                 ProgressView()
             } else {
-                ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
+                let routesArray = Array(busStop.routes as? Set<BusRoute> ?? [])
+                let sortedRoutes = routesArray.sorted(by: { (route1, route2) -> Bool in
+                    if let type1 = route1.routeTypeCd, let type2 = route2.routeTypeCd {
+                        if type1 != type2 {
+                            return type1 < type2
+                        } else {
+                            return route1.routeName ?? "" < route2.routeName ?? ""
+                        }
+                    }
+                    return false
+                })
+
+                ForEach(sortedRoutes, id: \.self) { route in
                     // 버스 노선의 위치 정보를 가져와서 표시
                     HStack {
                         Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
@@ -119,6 +131,50 @@ struct BusStopView: View {
         }
     }
 }
+
+
+
+//struct BusStopView: View {
+//    let busStop: BusStop
+//    @StateObject var busRealTimeViewModel = BusRealTimeViewModel()
+//    @Binding var isRefreshing: Bool
+//
+//    var body: some View {
+//        VStack(alignment: .leading) {
+//            Text("\(busStop.stationName ?? "Unknown") (\(busStop.mobileNo ?? "No Mobile No"))")
+//                .font(.headline)
+//
+//            if busRealTimeViewModel.isLoading {
+//                ProgressView()
+//            } else {
+//                ForEach(Array(busStop.routes as? Set<BusRoute> ?? []), id: \.self) { route in
+//                    // 버스 노선의 위치 정보를 가져와서 표시
+//                    HStack {
+//                        Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
+//                            .frame(maxWidth: .infinity, alignment: .leading) // 왼쪽 정렬
+//                        if let realTimeInfo = busRealTimeViewModel.busRealTimeInfos.first(where: { $0.routeId == route.routeId }) {
+//                            Text("\(realTimeInfo.predictTime1)분(\(realTimeInfo.locationNo1)전) \(realTimeInfo.predictTime2)분(\(realTimeInfo.locationNo2)전)")
+//                                .frame(maxWidth: .infinity, alignment: .trailing) // 오른쪽 정렬
+//                        } else {
+//                            Text("도착 정보 없음")
+//                                .frame(maxWidth: .infinity, alignment: .trailing) // 오른쪽 정렬
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        .onAppear {
+//            // 버스 정류장의 stationId를 사용하여 실시간 정보 검색
+//            busRealTimeViewModel.searchBusRealTimes(stationId: busStop.stationId ?? "")
+//        }
+//        .onChange(of: isRefreshing) { newValue, _ in
+//            if !newValue {
+//                // 새로고침이 완료되면 실시간 정보를 다시 가져옴
+//                busRealTimeViewModel.searchBusRealTimes(stationId: busStop.stationId ?? "")
+//            }
+//        }
+//    }
+//}
 
 
 
