@@ -97,7 +97,7 @@ struct BusStopView: View {
                         Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
                             .frame(maxWidth: .infinity, alignment: .leading) // 왼쪽 정렬
                         if let realTimeInfo = busRealTimeViewModel.busRealTimeInfos.first(where: { $0.routeId == route.routeId }) {
-                            Text("\(realTimeInfo.locationNo1)전(\(realTimeInfo.predictTime1)분후) \(realTimeInfo.locationNo2)전(\(realTimeInfo.predictTime2)분후)")
+                            Text("\(realTimeInfo.predictTime1)분(\(realTimeInfo.locationNo1)전) \(realTimeInfo.predictTime2)분(\(realTimeInfo.locationNo2)전)")
                                 .frame(maxWidth: .infinity, alignment: .trailing) // 오른쪽 정렬
                         } else {
                             Text("도착 정보 없음")
