@@ -18,26 +18,29 @@ class XMLParserDelegateHelper: NSObject, XMLParserDelegate {
     
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
         currentElement = elementName
+        
+        if elementName == "busStationList" {
+            // 새로운 busStationList 요소가 시작될 때 임시 문자열을 초기화합니다.
+            mobileNo = ""
+            stationName = ""
+            stationId = ""
+        }
     }
     
     func parser(_ parser: XMLParser, foundCharacters string: String) {
+        let trimmedString = string.trimmingCharacters(in: .whitespacesAndNewlines)
         switch currentElement {
         case "mobileNo":
-            mobileNo = string.trimmingCharacters(in: .whitespacesAndNewlines)
+            mobileNo += trimmedString // 문자열 추가
         case "stationName":
-            // 만약 `stationName`이 숫자로 시작하는지 확인하고, 숫자로 시작하지 않는 경우에만 공백 및 개행 문자를 제거합니다.
-            if let firstCharacter = string.first, !firstCharacter.isNumber {
-                stationName = string.trimmingCharacters(in: .whitespacesAndNewlines)
-            } else {
-                stationName += string // 숫자로 시작하는 경우 공백 및 개행 문자를 제거하지 않고 그대로 더합니다.
-            }
+            stationName += trimmedString // 문자열 추가
         case "stationId":
-            stationId = string.trimmingCharacters(in: .whitespacesAndNewlines)
+            stationId += trimmedString // 문자열 추가
         default:
             break
         }
     }
-    
+
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if elementName == "busStationList" {
             let busStation = BusStationInfo(mobileNo: mobileNo, stationName: stationName, stationId: stationId)

@@ -102,7 +102,7 @@ struct BusStopView: View {
                     }
                     return false
                 })
-
+                
                 ForEach(sortedRoutes, id: \.self) { route in
                     // 버스 노선의 위치 정보를 가져와서 표시
                     HStack {

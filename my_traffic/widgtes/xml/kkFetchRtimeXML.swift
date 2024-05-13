@@ -26,7 +26,7 @@ class BusRealTimeViewModel: ObservableObject {
             print("Invalid URL")
             return
         }
-        print(url)
+        //print(url)
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {
@@ -56,7 +56,7 @@ class BusRealTimeViewModel: ObservableObject {
         if parser.parse() {
             realtimes = xmlDelegate.busRealTimes
         }
-        print(realtimes)
+        //print(realtimes)
         return realtimes
     }
 }

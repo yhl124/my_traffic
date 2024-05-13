@@ -30,7 +30,13 @@ class BusStopViewModel: ObservableObject {
                 print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-            
+//            //xml출력용
+//            if let dataString = String(data: data, encoding: .utf8) {
+//                print("Data as string: \(dataString)")
+//            } else {
+//                print("Unable to convert data to string with UTF-8 encoding")
+//            }
+//            //여기까지
             DispatchQueue.main.async {
                 self.busStops = self.parseXMLData(data: data) // XML 파싱 후 업데이트
             }
@@ -47,7 +53,7 @@ class BusStopViewModel: ObservableObject {
         if parser.parse() {
             stations = xmlDelegate.busStations
         }
-        
+        //print(stations)
         return stations
     }
 }
