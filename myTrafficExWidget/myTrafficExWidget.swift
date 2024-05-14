@@ -9,43 +9,72 @@ import WidgetKit
 import SwiftUI
 import CoreData
 
-struct BusStopWidgetEntryView : View {
+struct BusStopWidgetEntryView: View {
     var entry: BusStopProvider.Entry
 
     var body: some View {
         GeometryReader { geometry in
             VStack {
                 if let busStops = entry.busStops {
-                    // 부모 뷰의 너비를 기반으로 최대 아이템 너비 계산
-                    let itemWidth = (geometry.size.width / 2) - 1 // 1은 그리드 아이템 간의 spacing을 고려
+                    let itemWidth = geometry.size.width / 2
+
                     let columns = [
-                        GridItem(.flexible(minimum: itemWidth, maximum: itemWidth)),
-                        GridItem(.flexible(minimum: itemWidth, maximum: itemWidth))
+                        GridItem(.fixed(itemWidth)),
+                        GridItem(.fixed(itemWidth))
                     ]
                     
                     LazyVGrid(columns: columns, spacing: 1) {
-                        ForEach(busStops, id: \.self) { busStop in
-                            VStack(alignment: .leading) {
-                                Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
-                                    .font(.system(size: 14))
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                // BusRoute 정보 추가
-                                if let routes = busStop.routes?.allObjects as? [BusRoute] {
-                                    ForEach(routes, id: \.self) { route in
-                                        Text(route.routeName ?? "")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                            }
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                        ForEach(busStops, id: \.objectID) { busStop in
+                            BusStopView(busStop: busStop, itemWidth: itemWidth, busRealTimeInfos: entry.busRealTimeInfos)
                         }
                     }
                 } else {
                     Text("No bus stops found")
                 }
+            }
+        }
+    }
+}
+
+struct BusStopView: View {
+    var busStop: BusStop
+    var itemWidth: CGFloat
+    var busRealTimeInfos: [BusRealTimeInfo]?
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
+                .font(.system(size: 14))
+                .lineLimit(1)
+                .truncationMode(.tail)
+
+            if let routes = busStop.routes?.allObjects as? [BusRoute] {
+                ForEach(routes, id: \.objectID) { route in
+                    let realTimeInfo = busRealTimeInfos?.first { $0.stationId == busStop.stationId && $0.routeId == route.routeId }
+                    BusRouteView(route: route, realTimeInfo: realTimeInfo)
+                }
+            }
+        }
+        .frame(width: itemWidth)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+struct BusRouteView: View {
+    var route: BusRoute
+    var realTimeInfo: BusRealTimeInfo?
+
+    var body: some View {
+        HStack {
+            Text(route.routeName ?? "")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            if let realTimeInfo = realTimeInfo {
+                Text(realTimeInfo.locationNo1)
+                    .font(.caption)
+                    .foregroundColor(.primary)
             }
         }
     }
@@ -64,21 +93,22 @@ struct myTrafficExWidget: Widget {
     }
 }
 
+
 struct BusStopProvider: TimelineProvider {
     typealias Entry = BusStopEntry
 
     func placeholder(in context: Context) -> BusStopEntry {
-        BusStopEntry(date: Date(), busStops: nil)
+        BusStopEntry(date: Date(), busStops: nil, busRealTimeInfos: nil)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (BusStopEntry) -> ()) {
-        let entry = BusStopEntry(date: Date(), busStops: nil)
+        let entry = BusStopEntry(date: Date(), busStops: nil, busRealTimeInfos: nil)
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<BusStopEntry>) -> ()) {
         var entries: [BusStopEntry] = []
-        
+
         let container = NSPersistentContainer(name: "my_traffic")
         let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic")!.appendingPathComponent("my_traffic.sqlite")
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
@@ -88,29 +118,160 @@ struct BusStopProvider: TimelineProvider {
                 print("Error loading store: \(error!)")
                 return
             }
-            
+
             let context = container.viewContext
-            
+
             let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
             do {
                 let busStops = try context.fetch(fetchRequest)
-                let currentDate = Date()
-                let entry = BusStopEntry(date: currentDate, busStops: busStops)
-                entries.append(entry)
+
+                // Fetch real-time data for each bus stop
+                let dispatchGroup = DispatchGroup()
+                var allRealTimeInfos: [BusRealTimeInfo] = []
+
+                for busStop in busStops {
+                    if let stationId = busStop.stationId {
+                        dispatchGroup.enter()
+                        BusRealTimeViewModel().searchBusRealTimes(stationId: stationId) { realTimeInfos in
+                            allRealTimeInfos.append(contentsOf: realTimeInfos)
+                            dispatchGroup.leave()
+                        }
+                    }
+                }
+
+                dispatchGroup.notify(queue: .main) {
+                    let currentDate = Date()
+                    let entry = BusStopEntry(date: currentDate, busStops: busStops, busRealTimeInfos: allRealTimeInfos)
+                    entries.append(entry)
+
+                    let timeline = Timeline(entries: entries, policy: .atEnd)
+                    completion(timeline)
+                }
+
             } catch {
                 print("Error fetching bus stops: \(error)")
             }
-
-            let timeline = Timeline(entries: entries, policy: .atEnd)
-            completion(timeline)
         }
     }
 }
 
+
 struct BusStopEntry: TimelineEntry {
     let date: Date
     let busStops: [BusStop]?
+    let busRealTimeInfos: [BusRealTimeInfo]?
 }
+
+
+//struct BusStopWidgetEntryView: View {
+//    var entry: BusStopProvider.Entry
+//
+//    var body: some View {
+//        GeometryReader { geometry in
+//            VStack {
+//                if let busStops = entry.busStops {
+//                    let itemWidth = geometry.size.width / 2
+//
+//                    let columns = [
+//                        GridItem(.fixed(itemWidth)),
+//                        GridItem(.fixed(itemWidth))
+//                    ]
+//                    
+//                    LazyVGrid(columns: columns, spacing: 1) {
+//                        ForEach(busStops, id: \.objectID) { busStop in
+//                            BusStopView(busStop: busStop, itemWidth: itemWidth)
+//                        }
+//                    }
+//                } else {
+//                    Text("No bus stops found")
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//struct BusStopView: View {
+//    var busStop: BusStop
+//    var itemWidth: CGFloat
+//
+//    var body: some View {
+//        VStack(alignment: .leading) {
+//            Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
+//                .font(.system(size: 14))
+//                .lineLimit(1)
+//                .truncationMode(.tail)
+//            
+//            if let routes = busStop.routes?.allObjects as? [BusRoute] {
+//                ForEach(routes, id: \.objectID) { route in
+//                    BusRouteView(route: route)
+//                }
+//            }
+//        }
+//        .frame(width: itemWidth)
+//        .background(Color.gray.opacity(0.1))
+//        .cornerRadius(8)
+//    }
+//}
+//
+//struct BusRouteView: View {
+//    var route: BusRoute
+//
+//    var body: some View {
+//        Text(route.routeName ?? "")
+//            .font(.caption)
+//            .foregroundColor(.secondary)
+//    }
+//}
+//
+//
+//
+//struct BusStopProvider: TimelineProvider {
+//    typealias Entry = BusStopEntry
+//
+//    func placeholder(in context: Context) -> BusStopEntry {
+//        BusStopEntry(date: Date(), busStops: nil)
+//    }
+//
+//    func getSnapshot(in context: Context, completion: @escaping (BusStopEntry) -> ()) {
+//        let entry = BusStopEntry(date: Date(), busStops: nil)
+//        completion(entry)
+//    }
+//
+//    func getTimeline(in context: Context, completion: @escaping (Timeline<BusStopEntry>) -> ()) {
+//        var entries: [BusStopEntry] = []
+//        
+//        let container = NSPersistentContainer(name: "my_traffic")
+//        let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mytraffic")!.appendingPathComponent("my_traffic.sqlite")
+//        let storeDescription = NSPersistentStoreDescription(url: storeURL)
+//        container.persistentStoreDescriptions = [storeDescription]
+//        container.loadPersistentStores { _, error in
+//            guard error == nil else {
+//                print("Error loading store: \(error!)")
+//                return
+//            }
+//            
+//            let context = container.viewContext
+//            
+//            let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
+//            do {
+//                let busStops = try context.fetch(fetchRequest)
+//                let currentDate = Date()
+//                let entry = BusStopEntry(date: currentDate, busStops: busStops)
+//                entries.append(entry)
+//            } catch {
+//                print("Error fetching bus stops: \(error)")
+//            }
+//
+//            let timeline = Timeline(entries: entries, policy: .atEnd)
+//            completion(timeline)
+//        }
+//    }
+//}
+//
+//struct BusStopEntry: TimelineEntry {
+//    let date: Date
+//    let busStops: [BusStop]?
+//}
 
 
 

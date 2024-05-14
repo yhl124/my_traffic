@@ -12,7 +12,7 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>apis.data.go.kr/6410000</key>
+			<key>apis.data.go.kr</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
