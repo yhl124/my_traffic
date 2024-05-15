@@ -22,10 +22,10 @@ struct BusStopWidgetEntryView: View {
                         GridItem(.fixed(itemWidth)),
                         GridItem(.fixed(itemWidth))
                     ]
-                    
+
                     LazyVGrid(columns: columns, spacing: 1) {
                         ForEach(busStops, id: \.objectID) { busStop in
-                            BusStopView(busStop: busStop, itemWidth: itemWidth, busRealTimeInfos: entry.busRealTimeInfos)
+                            BusStopView(busStop: busStop, itemWidth: itemWidth, realTimeInfos: entry.realTimeInfos.filter { $0.stationId == busStop.stationId })
                         }
                     }
                 } else {
@@ -36,10 +36,12 @@ struct BusStopWidgetEntryView: View {
     }
 }
 
+
+
 struct BusStopView: View {
     var busStop: BusStop
     var itemWidth: CGFloat
-    var busRealTimeInfos: [BusRealTimeInfo]?
+    var realTimeInfos: [BusRealTimeInfo]
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -50,8 +52,7 @@ struct BusStopView: View {
 
             if let routes = busStop.routes?.allObjects as? [BusRoute] {
                 ForEach(routes, id: \.objectID) { route in
-                    let realTimeInfo = busRealTimeInfos?.first { $0.stationId == busStop.stationId && $0.routeId == route.routeId }
-                    BusRouteView(route: route, realTimeInfo: realTimeInfo)
+                    BusRouteView(route: route, realTimeInfos: realTimeInfos.filter { $0.routeId == route.routeId })
                 }
             }
         }
@@ -61,9 +62,10 @@ struct BusStopView: View {
     }
 }
 
+
 struct BusRouteView: View {
     var route: BusRoute
-    var realTimeInfo: BusRealTimeInfo?
+    var realTimeInfos: [BusRealTimeInfo]
 
     var body: some View {
         HStack {
@@ -71,10 +73,10 @@ struct BusRouteView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            if let realTimeInfo = realTimeInfo {
+            if let realTimeInfo = realTimeInfos.first {
                 Text(realTimeInfo.locationNo1)
                     .font(.caption)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.blue)
             }
         }
     }
@@ -93,16 +95,15 @@ struct myTrafficExWidget: Widget {
     }
 }
 
-
-struct BusStopProvider: TimelineProvider {
+class BusStopProvider: TimelineProvider {
     typealias Entry = BusStopEntry
 
     func placeholder(in context: Context) -> BusStopEntry {
-        BusStopEntry(date: Date(), busStops: nil, busRealTimeInfos: nil)
+        BusStopEntry(date: Date(), busStops: nil, realTimeInfos: [])
     }
 
     func getSnapshot(in context: Context, completion: @escaping (BusStopEntry) -> ()) {
-        let entry = BusStopEntry(date: Date(), busStops: nil, busRealTimeInfos: nil)
+        let entry = BusStopEntry(date: Date(), busStops: nil, realTimeInfos: [])
         completion(entry)
     }
 
@@ -124,45 +125,56 @@ struct BusStopProvider: TimelineProvider {
             let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
             do {
                 let busStops = try context.fetch(fetchRequest)
+//                for busStop in busStops {
+//                     print("BusStop object: \(busStop), Type: \(type(of: busStop))")
+//                    print("Station Name: \(busStop.stationName ?? "No name")")
+//                    print("MobileNo: \(busStop.mobileNo ?? "No mobileno")")
+//                    let routes = (busStop.routes as? Set<String>)?.joined(separator: ", ") ?? "No route"
+//                    print("Bus Route: \(routes)")
+//                }
+                let currentDate = Date()
 
-                // Fetch real-time data for each bus stop
-                let dispatchGroup = DispatchGroup()
-                var allRealTimeInfos: [BusRealTimeInfo] = []
-
-                for busStop in busStops {
-                    if let stationId = busStop.stationId {
-                        dispatchGroup.enter()
-                        BusRealTimeViewModel().searchBusRealTimes(stationId: stationId) { realTimeInfos in
-                            allRealTimeInfos.append(contentsOf: realTimeInfos)
-                            dispatchGroup.leave()
-                        }
-                    }
-                }
-
-                dispatchGroup.notify(queue: .main) {
-                    let currentDate = Date()
-                    let entry = BusStopEntry(date: currentDate, busStops: busStops, busRealTimeInfos: allRealTimeInfos)
+                self.fetchRealTimeData(for: busStops) { realTimeInfos in
+                    let entry = BusStopEntry(date: currentDate, busStops: busStops, realTimeInfos: realTimeInfos)
                     entries.append(entry)
 
                     let timeline = Timeline(entries: entries, policy: .atEnd)
                     completion(timeline)
                 }
-
             } catch {
                 print("Error fetching bus stops: \(error)")
             }
         }
     }
-}
 
+    private func fetchRealTimeData(for busStops: [BusStop], completion: @escaping ([BusRealTimeInfo]) -> Void) {
+        let group = DispatchGroup()
+        var realTimeInfos = [BusRealTimeInfo]()
+
+        for busStop in busStops {
+            if let stationId = busStop.stationId {
+                group.enter()
+                BusRealTimeViewModel().searchBusRealTimes(stationId: stationId) { infos in
+                    realTimeInfos.append(contentsOf: infos)
+                    group.leave()
+                }
+            }
+        }
+
+        group.notify(queue: .main) {
+            completion(realTimeInfos)
+        }
+    }
+}
 
 struct BusStopEntry: TimelineEntry {
     let date: Date
     let busStops: [BusStop]?
-    let busRealTimeInfos: [BusRealTimeInfo]?
+    let realTimeInfos: [BusRealTimeInfo]
 }
 
 
+//기존
 //struct BusStopWidgetEntryView: View {
 //    var entry: BusStopProvider.Entry
 //
@@ -223,6 +235,18 @@ struct BusStopEntry: TimelineEntry {
 //    }
 //}
 //
+//struct myTrafficExWidget: Widget {
+//    let kind: String = "BusStopWidget"
+//
+//    var body: some WidgetConfiguration {
+//        StaticConfiguration(kind: kind, provider: BusStopProvider()) { entry in
+//            BusStopWidgetEntryView(entry: entry)
+//        }
+//        .configurationDisplayName("Bus Stops")
+//        .description("Shows nearby bus stops.")
+//    }
+//}
+//
 //
 //
 //struct BusStopProvider: TimelineProvider {
@@ -255,6 +279,8 @@ struct BusStopEntry: TimelineEntry {
 //            let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
 //            do {
 //                let busStops = try context.fetch(fetchRequest)
+//                //print("fffffffffffffffffffffffffffffffffffffffffff")
+//                //print(busStops)
 //                let currentDate = Date()
 //                let entry = BusStopEntry(date: currentDate, busStops: busStops)
 //                entries.append(entry)
@@ -272,9 +298,9 @@ struct BusStopEntry: TimelineEntry {
 //    let date: Date
 //    let busStops: [BusStop]?
 //}
-
-
-
+//
+//
+//
 ////busstop만 출력하는 코드
 //struct BusStopWidgetEntryView : View {
 //    var entry: BusStopProvider.Entry

@@ -55,7 +55,7 @@ struct BusStopDetailView: View {
                     }
                 )
             }
-            .onChange(of: showAlert) { newValue in
+            .onChange(of: showAlert) { newValue, _ in
                 // showAlert의 값이 변경될 때만 presentationMode를 처리합니다.
                 // showAlert이 false가 되면, 즉 alert가 닫히면 presentationMode를 통해 화면을 닫습니다.
                 if !newValue {
