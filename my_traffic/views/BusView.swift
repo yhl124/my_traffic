@@ -17,7 +17,7 @@ struct BusView: View {
     
     var body: some View {
         VStack {
-            NavigationView {
+            //NavigationView {
                 List(viewModel.busStops) { station in
                     VStack(alignment: .leading) {
                         Text(station.stationName)
@@ -28,9 +28,10 @@ struct BusView: View {
                     }
                 }
                 .listStyle(.plain)
-                .searchable(text: $searchQuery, placement: .navigationBarDrawer, prompt: "정류장 검색") // 검색 기능 추가
-            }
+                
+            //}
         }
+        .searchable(text: $searchQuery, placement: .navigationBarDrawer, prompt: "정류장 검색") // 검색 기능 추가
         .navigationTitle("버스 정류장 검색")
         .navigationBarTitleDisplayMode(.inline)
         .onSubmit(of: .search) {
