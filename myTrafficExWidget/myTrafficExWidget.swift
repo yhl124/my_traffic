@@ -8,6 +8,8 @@
 import WidgetKit
 import SwiftUI
 import CoreData
+import Combine
+import Foundation
 
 
 //기존
@@ -135,59 +137,57 @@ import CoreData
 //    let busStops: [BusStop]?
 //}
 
-import Foundation
-import Combine
 
-class BusRealTimeViewModel: ObservableObject {
-    @Published var busRealTimeInfos: [BusRealTimeInfo] = []
-    @Published var isLoading = false
-
-    func fetchBusRealTimes(stationId: String, completion: @escaping ([BusRealTimeInfo]) -> Void) {
-        isLoading = true
-        let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
-
-        guard let encodedStationId = stationId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            print("Failed to encode stationId")
-            isLoading = false
-            return
-        }
-
-        let urlString = "https://apis.data.go.kr/6410000/busarrivalservice/getBusArrivalList?serviceKey=\(apiKey)&stationId=\(encodedStationId)"
-        guard let url = URL(string: urlString) else {
-            print("Invalid URL")
-            isLoading = false
-            return
-        }
-
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
-                DispatchQueue.main.async {
-                    self.isLoading = false
-                }
-                return
-            }
-
-            DispatchQueue.main.async {
-                let realTimeInfos = self.parseXMLRealTimeData(data: data)
-                self.isLoading = false
-                completion(realTimeInfos)
-            }
-        }.resume()
-    }
-
-    private func parseXMLRealTimeData(data: Data) -> [BusRealTimeInfo] {
-        var realtimes = [BusRealTimeInfo]()
-        let parser = XMLParser(data: data)
-        let xmlDelegate = XMLParserDelegateKKRtime()
-        parser.delegate = xmlDelegate
-
-        if parser.parse() {
-            realtimes = xmlDelegate.busRealTimes
-        }
-        return realtimes
-    }
-}
+//class BusRealTimeViewModel: ObservableObject {
+//    @Published var busRealTimeInfos: [BusRealTimeInfo] = []
+//    @Published var isLoading = false
+//
+//    func fetchBusRealTimes(stationId: String, completion: @escaping ([BusRealTimeInfo]) -> Void) {
+//        isLoading = true
+//        let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
+//
+//        guard let encodedStationId = stationId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+//            print("Failed to encode stationId")
+//            isLoading = false
+//            return
+//        }
+//
+//        let urlString = "https://apis.data.go.kr/6410000/busarrivalservice/getBusArrivalList?serviceKey=\(apiKey)&stationId=\(encodedStationId)"
+//        guard let url = URL(string: urlString) else {
+//            print("Invalid URL")
+//            isLoading = false
+//            return
+//        }
+//
+//        URLSession.shared.dataTask(with: url) { data, response, error in
+//            guard let data = data, error == nil else {
+//                print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
+//                DispatchQueue.main.async {
+//                    self.isLoading = false
+//                }
+//                return
+//            }
+//
+//            DispatchQueue.main.async {
+//                let realTimeInfos = self.parseXMLRealTimeData(data: data)
+//                self.isLoading = false
+//                completion(realTimeInfos)
+//            }
+//        }.resume()
+//    }
+//
+//    private func parseXMLRealTimeData(data: Data) -> [BusRealTimeInfo] {
+//        var realtimes = [BusRealTimeInfo]()
+//        let parser = XMLParser(data: data)
+//        let xmlDelegate = XMLParserDelegateKKRtime()
+//        parser.delegate = xmlDelegate
+//
+//        if parser.parse() {
+//            realtimes = xmlDelegate.busRealTimes
+//        }
+//        return realtimes
+//    }
+//}
 
 
 struct BusStopWidgetEntryView: View {
@@ -296,33 +296,85 @@ struct BusStopProvider: TimelineProvider {
             }
 
             let context = container.viewContext
-            let fetchRequest: NSFetchRequest<BusStop> = NSFetchRequest<BusStop>(entityName: "BusStop")
+            let fetchRequest: NSFetchRequest<BusStop> = BusStop.fetchRequest()
             do {
                 let busStops = try context.fetch(fetchRequest)
-                let group = DispatchGroup()
                 var busRealTimeInfos: [BusRealTimeInfo] = []
                 let realTimeViewModel = BusRealTimeViewModel()
-//
-//                for busStop in busStops {
-//                    group.enter()
-//                    realTimeViewModel.fetchBusRealTimes(stationId: busStop.stationId ?? "") { realTimes in
-//                        busRealTimeInfos.append(contentsOf: realTimes)
-//                        group.leave()
-//                    }
-//                }
-//
-//                group.notify(queue: .main) {
-                    let currentDate = Date()
-                    let entry = BusStopEntry(date: currentDate, busStops: busStops, busRealTimes: busRealTimeInfos)
-                    entries.append(entry)
-//
-                    let timeline = Timeline(entries: entries, policy: .atEnd)
-                    completion(timeline)
-//                }
+
+                for busStop in busStops {
+                    if let stationId = busStop.stationId {
+                        // 동기적으로 실시간 데이터를 가져오는 메서드 호출
+                        let realTimes = fetchBusRealTimesSynchronously(stationId: stationId)
+                        busRealTimeInfos.append(contentsOf: realTimes)
+                    } else {
+                        print("Error: stationId is nil for busStop \(busStop)")
+                    }
+                }
+
+                let currentDate = Date()
+                let entry = BusStopEntry(date: currentDate, busStops: busStops, busRealTimes: busRealTimeInfos)
+                entries.append(entry)
+
+                let timeline = Timeline(entries: entries, policy: .atEnd)
+                completion(timeline)
             } catch {
                 print("Error fetching bus stops: \(error)")
             }
         }
+    }
+
+    func fetchBusRealTimesSynchronously(stationId: String) -> [BusRealTimeInfo] {
+        let semaphore = DispatchSemaphore(value: 0)
+        var realTimeInfos: [BusRealTimeInfo] = []
+
+        let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
+
+        guard let encodedStationId = stationId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            print("Failed to encode stationId")
+            return realTimeInfos
+        }
+
+        let urlString = "https://apis.data.go.kr/6410000/busarrivalservice/getBusArrivalList?serviceKey=\(apiKey)&stationId=\(encodedStationId)"
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return realTimeInfos
+        }
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
+                semaphore.signal()
+                return
+            }
+            
+            // Convert data to string and print to console
+            if let xmlString = String(data: data, encoding: .utf8) {
+                print("XML Data: \(xmlString)")
+            } else {
+                print("Failed to convert XML data to string")
+            }
+            
+
+            realTimeInfos = self.parseXMLRealTimeData(data: data)
+            semaphore.signal()
+        }.resume()
+
+        semaphore.wait()
+        return realTimeInfos
+    }
+
+    private func parseXMLRealTimeData(data: Data) -> [BusRealTimeInfo] {
+        var realtimes = [BusRealTimeInfo]()
+
+        let parser = XMLParser(data: data)
+        let xmlDelegate = XMLParserDelegateKKRtime()
+        parser.delegate = xmlDelegate
+
+        if parser.parse() {
+            realtimes = xmlDelegate.busRealTimes
+        }
+        return realtimes
     }
 }
 
