@@ -71,6 +71,10 @@ class BusRealTimeViewModel: ObservableObject {
         isLoading = true
 
         let apiKey = KeyOutput.getAPIKey(for: "BusStopSearch")
+        
+//        if let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last {
+//            print("Documents Directory: \(documentsDirectoryURL)")
+//        }
 
         guard let encodedStationId = stationId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             print("Failed to encode stationId")

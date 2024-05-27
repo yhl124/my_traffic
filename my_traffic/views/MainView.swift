@@ -106,6 +106,8 @@ struct BusStopView: View {
                 ForEach(sortedRoutes, id: \.self) { route in
                     // 버스 노선의 위치 정보를 가져와서 표시
                     HStack {
+                        //routeId까지 표시
+                        //Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "") - \(route.routeId ?? "")")
                         Text("\(route.routeName ?? "") - \(route.routeTypeCd ?? "")")
                             .frame(maxWidth: .infinity, alignment: .leading) // 왼쪽 정렬
                         if let realTimeInfo = busRealTimeViewModel.busRealTimeInfos.first(where: { $0.routeId == route.routeId }) {

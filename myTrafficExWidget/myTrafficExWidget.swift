@@ -190,6 +190,87 @@ import Foundation
 //}
 
 
+//struct BusStopWidgetEntryView: View {
+//    var entry: BusStopProvider.Entry
+//
+//    var body: some View {
+//        GeometryReader { geometry in
+//            VStack {
+//                if let busStops = entry.busStops {
+//                    let itemWidth = geometry.size.width / 2
+//
+//                    let columns = [
+//                        GridItem(.fixed(itemWidth)),
+//                        GridItem(.fixed(itemWidth))
+//                    ]
+//                    
+//                    LazyVGrid(columns: columns, spacing: 1) {
+//                        ForEach(busStops, id: \.objectID) { busStop in
+//                            BusStopView(busStop: busStop, itemWidth: itemWidth)
+//                        }
+//                    }
+//                } else {
+//                    Text("No bus stops found")
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//struct BusStopView: View {
+//    var busStop: BusStop
+//    var itemWidth: CGFloat
+//
+//    var body: some View {
+//        VStack(alignment: .leading) {
+//            //gpt4o
+//            if let stationName = busStop.stationName, let mobileNo = busStop.mobileNo {
+//                Text("\(stationName) (\(mobileNo))")
+//                    .font(.system(size: 14))
+//                    .lineLimit(1)
+//                    .truncationMode(.tail)
+//            }
+////            //기존
+////            Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
+////                .font(.system(size: 14))
+////                .lineLimit(1)
+////                .truncationMode(.tail)
+//            
+//            if let routes = busStop.routes?.allObjects as? [BusRoute] {
+//                ForEach(routes, id: \.objectID) { route in
+//                    BusRouteView(route: route)
+//                }
+//            }
+//        }
+//        .frame(width: itemWidth)
+//        .background(Color.gray.opacity(0.1))
+//        .cornerRadius(8)
+//    }
+//}
+//
+//struct BusRouteView: View {
+//    var route: BusRoute
+//
+//    var body: some View {
+//        Text(route.routeName ?? "")
+//            .font(.caption)
+//            .foregroundColor(.secondary)
+//    }
+//}
+//
+//struct myTrafficExWidget: Widget {
+//    let kind: String = "BusStopWidget"
+//
+//    var body: some WidgetConfiguration {
+//        StaticConfiguration(kind: kind, provider: BusStopProvider()) { entry in
+//            BusStopWidgetEntryView(entry: entry)
+//        }
+//        .configurationDisplayName("Bus Stops")
+//        .description("Shows nearby bus stops.")
+//    }
+//}
+
+
 struct BusStopWidgetEntryView: View {
     var entry: BusStopProvider.Entry
 
@@ -206,7 +287,7 @@ struct BusStopWidgetEntryView: View {
                     
                     LazyVGrid(columns: columns, spacing: 1) {
                         ForEach(busStops, id: \.objectID) { busStop in
-                            BusStopView(busStop: busStop, itemWidth: itemWidth)
+                            BusStopView(busStop: busStop, itemWidth: itemWidth, busRealTimes: entry.busRealTimes ?? [])
                         }
                     }
                 } else {
@@ -220,21 +301,16 @@ struct BusStopWidgetEntryView: View {
 struct BusStopView: View {
     var busStop: BusStop
     var itemWidth: CGFloat
+    var busRealTimes: [BusRealTimeInfo]
 
     var body: some View {
         VStack(alignment: .leading) {
-            //gpt4o
             if let stationName = busStop.stationName, let mobileNo = busStop.mobileNo {
-                Text("\(stationName) (\(mobileNo))")
+                Text("\(stationName) (\(mobileNo)\(getLocationInfo(for: busStop)))")
                     .font(.system(size: 14))
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
-//            //기존
-//            Text("\(busStop.stationName ?? "") (\(busStop.mobileNo ?? ""))")
-//                .font(.system(size: 14))
-//                .lineLimit(1)
-//                .truncationMode(.tail)
             
             if let routes = busStop.routes?.allObjects as? [BusRoute] {
                 ForEach(routes, id: \.objectID) { route in
@@ -246,6 +322,23 @@ struct BusStopView: View {
         .background(Color.gray.opacity(0.1))
         .cornerRadius(8)
     }
+    
+    private func getLocationInfo(for busStop: BusStop) -> String {
+        for realTimeInfo in busRealTimes {
+            if realTimeInfo.stationId == busStop.stationId {
+                if let routes = busStop.routes?.allObjects as? [BusRoute] {
+                    for route in routes {
+                        if realTimeInfo.routeId == route.routeId {
+                            print("Matching routeId found: \(route.routeId ?? "") - locationNo1: \(realTimeInfo.locationNo1)")
+                            return " - \(realTimeInfo.locationNo1)"
+                        }
+                    }
+                }
+            }
+        }
+        return ""
+    }
+
 }
 
 struct BusRouteView: View {
@@ -269,6 +362,8 @@ struct myTrafficExWidget: Widget {
         .description("Shows nearby bus stops.")
     }
 }
+
+
 
 struct BusStopProvider: TimelineProvider {
     typealias Entry = BusStopEntry
@@ -300,7 +395,7 @@ struct BusStopProvider: TimelineProvider {
             do {
                 let busStops = try context.fetch(fetchRequest)
                 var busRealTimeInfos: [BusRealTimeInfo] = []
-                let realTimeViewModel = BusRealTimeViewModel()
+                //let realTimeViewModel = BusRealTimeViewModel()
 
                 for busStop in busStops {
                     if let stationId = busStop.stationId {
@@ -348,12 +443,12 @@ struct BusStopProvider: TimelineProvider {
                 return
             }
             
-            // Convert data to string and print to console
-            if let xmlString = String(data: data, encoding: .utf8) {
-                print("XML Data: \(xmlString)")
-            } else {
-                print("Failed to convert XML data to string")
-            }
+//            // Convert data to string and print to console xml출력용
+//            if let xmlString = String(data: data, encoding: .utf8) {
+//                print("XML Data: \(xmlString)")
+//            } else {
+//                print("Failed to convert XML data to string")
+//            }
             
 
             realTimeInfos = self.parseXMLRealTimeData(data: data)

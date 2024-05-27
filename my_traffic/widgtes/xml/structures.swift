@@ -55,3 +55,4 @@ struct BusRealTimeInfo: Identifiable{
     var predictTime1: String
     var predictTime2: String
 }
+

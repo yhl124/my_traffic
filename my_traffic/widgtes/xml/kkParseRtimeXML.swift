@@ -44,6 +44,8 @@ class XMLParserDelegateKKRtime: NSObject, XMLParserDelegate {
         if elementName == "busArrivalList" {
             if let realTimeInfo = currentRealTimeInfo {
                 busRealTimes.append(realTimeInfo)
+                //파싱 결과 콘솔 출력용
+                print("Parsed BusRealTimeInfo: \(realTimeInfo)")
                 currentRealTimeInfo = nil
             }
         }
