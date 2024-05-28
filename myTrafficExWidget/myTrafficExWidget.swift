@@ -132,10 +132,14 @@ struct BusRouteView: View {
             Text(route.routeName ?? "")
                 .font(.caption)
                 .foregroundColor(.secondary)
+                .lineLimit(1)
+                .truncationMode(.tail)
             if let locationInfo = getLocationInfo() {
                 Text(locationInfo)
                     .font(.caption)
                     .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
         }
     }
@@ -143,12 +147,22 @@ struct BusRouteView: View {
     private func getLocationInfo() -> String? {
         for realTimeInfo in busRealTimes {
             if realTimeInfo.routeId == route.routeId {
-                return "\(realTimeInfo.predictTime1)분(\(realTimeInfo.locationNo1)전) \(realTimeInfo.predictTime2)분(\(realTimeInfo.locationNo2)전)"
+                let predictTime1 = realTimeInfo.predictTime1
+                let locationNo1 = realTimeInfo.locationNo1
+                let predictTime2 = realTimeInfo.predictTime2
+                let locationNo2 = realTimeInfo.locationNo2
+                
+                if !predictTime2.isEmpty && !locationNo2.isEmpty {
+                    return "\(predictTime1)분(\(locationNo1)전) \(predictTime2)분(\(locationNo2)전)"
+                } else {
+                    return "\(predictTime1)분(\(locationNo1)전)"
+                }
             }
         }
         return nil
     }
 }
+
 
 
 struct myTrafficExWidget: Widget {
