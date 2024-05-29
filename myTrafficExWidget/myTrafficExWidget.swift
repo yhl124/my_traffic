@@ -140,6 +140,12 @@ struct BusRouteView: View {
                     .foregroundColor(.primary)
                     .lineLimit(1)
                     .truncationMode(.tail)
+            } else {
+                Text("도착 정보 없음")
+                    .font(.caption)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
         }
     }

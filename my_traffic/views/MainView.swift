@@ -27,7 +27,7 @@ struct MainView: View {
                     NavigationButtons()
                 }
             }
-            .navigationTitle("위젯 설정")
+            .navigationTitle("실시간 교통 정보")
             .navigationBarItems(trailing: SettingButton())
         }
     }

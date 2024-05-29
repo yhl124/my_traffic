@@ -38,7 +38,7 @@ struct CustomSheetStyle<Content: View>: View {
             content
         }
         .padding(.horizontal)
-        .background(Color.white)
+        .background(Color(UIColor.systemGray6).edgesIgnoringSafeArea(.all))
         .cornerRadius(20)
         .shadow(radius: 10)
     }

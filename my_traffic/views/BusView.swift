@@ -17,19 +17,16 @@ struct BusView: View {
     
     var body: some View {
         VStack {
-            //NavigationView {
-                List(viewModel.busStops) { station in
-                    VStack(alignment: .leading) {
-                        Text(station.stationName)
-                        Text(station.mobileNo)
-                    }
-                    .onTapGesture {
-                        selectedBusStop = station
-                    }
+            List(viewModel.busStops) { station in
+                VStack(alignment: .leading) {
+                    Text(station.stationName)
+                    Text(station.mobileNo)
                 }
-                .listStyle(.plain)
-                
-            //}
+                .onTapGesture {
+                    selectedBusStop = station
+                }
+            }
+            .listStyle(.plain)
         }
         .searchable(text: $searchQuery, placement: .navigationBarDrawer, prompt: "정류장 검색") // 검색 기능 추가
         .navigationTitle("버스 정류장 검색")
