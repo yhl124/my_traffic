@@ -3,9 +3,10 @@
 - 사용된 LLM : chatgpt3.5, 4, 4o, claude3, gemini
 
 ### 개발 환경
-os : macOs Sonoma 14.4.1  
-Xcode : 15.4  
-최소 지원 iOS 버전 : 17.2   
+- OS : macOs Sonoma 14.4.1  
+- Xcode : 15.4
+- swift : 5.10
+- 최소 지원 iOS 버전 : 17.2   
 
 ### 구현된 부분
 1. 메인 화면
