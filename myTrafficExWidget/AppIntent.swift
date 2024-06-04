@@ -16,3 +16,14 @@ struct ConfigurationAppIntent: WidgetConfigurationIntent {
     @Parameter(title: "Favorite Emoji", default: "😃")
     var favoriteEmoji: String
 }
+
+struct ReloadWidgetIntent: AppIntent {
+    static var title: LocalizedStringResource = "Reload widget"
+    static var description = IntentDescription("Reload widget.")
+
+    init() {}
+
+    func perform() async throws -> some IntentResult {
+        return .result()
+    }
+}

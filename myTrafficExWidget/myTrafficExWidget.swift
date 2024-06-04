@@ -30,7 +30,9 @@ struct BusStopWidgetEntryView: View {
                         ForEach(busStops, id: \.objectID) { busStop in
                             BusStopView(busStop: busStop, itemWidth: itemWidth, busRealTimes: entry.busRealTimes ?? [])
                         }
+                        ReloadView()
                     }
+                    
                 } else {
                     Text("No bus stops found")
                 }
@@ -169,7 +171,14 @@ struct BusRouteView: View {
     }
 }
 
+struct ReloadView: View {
 
+    var body: some View {
+        Button(intent: ReloadWidgetIntent()) {
+            Text("Refresh")
+        }
+    }
+}
 
 struct myTrafficExWidget: Widget {
     let kind: String = "BusStopWidget"
