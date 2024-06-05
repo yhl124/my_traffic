@@ -30,11 +30,18 @@ struct BusStopWidgetEntryView: View {
                         ForEach(busStops, id: \.objectID) { busStop in
                             BusStopView(busStop: busStop, itemWidth: itemWidth, busRealTimes: entry.busRealTimes ?? [])
                         }
-                        ReloadView()
                     }
                     
                 } else {
                     Text("No bus stops found")
+                }
+            }
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    ReloadView()
+                        //.padding(8)
                 }
             }
         }
@@ -108,9 +115,17 @@ struct BusStopView: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
-            
+
             if let routes = busStop.routes?.allObjects as? [BusRoute] {
-                ForEach(routes, id: \.objectID) { route in
+                let sortedRoutes = routes.sorted {
+                    if $0.routeTypeCd != $1.routeTypeCd {
+                        return $0.routeTypeCd! < $1.routeTypeCd!
+                    } else {
+                        return ($0.routeName ?? "") < ($1.routeName ?? "")
+                    }
+                }
+
+                ForEach(sortedRoutes, id: \.objectID) { route in
                     BusRouteView(route: route, busRealTimes: getBusRealTimes(for: route))
                 }
             }
@@ -119,11 +134,12 @@ struct BusStopView: View {
         .background(Color.gray.opacity(0.1))
         .cornerRadius(8)
     }
-    
+
     private func getBusRealTimes(for route: BusRoute) -> [BusRealTimeInfo] {
         busRealTimes.filter { $0.routeId == route.routeId }
     }
 }
+
 
 struct BusRouteView: View {
     var route: BusRoute
@@ -175,8 +191,17 @@ struct ReloadView: View {
 
     var body: some View {
         Button(intent: ReloadWidgetIntent()) {
-            Text("Refresh")
+            HStack {
+                Image(systemName: "arrow.clockwise")
+                Text("새로고침")
+                    .font(.system(size: 12))
+            }
+            .padding(2)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(4)
         }
+        .buttonStyle(BorderlessButtonStyle())
     }
 }
 
