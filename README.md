@@ -34,8 +34,10 @@
 
 5. 위젯
     - 구현 내용 : coredata에 저장된 노선을 불러와 api를 호출해 현재 정보 표시
+    - 새로고침 버튼으로 실시간 정보 갱신 가능
 
-![image](https://github.com/yhl124/my_traffic/assets/139377233/5ce7ae88-439f-4b86-b1f6-2699f68ab6be)
+![image](https://github.com/yhl124/my_traffic/assets/139377233/a208bcee-98ab-4971-a0b1-b0fefbde1690)
+
 
 ## 사용 api
 - 경기도_정류소 조회 : 정류소명/번호 목록조회, 정류소경유노선 목록조회   
